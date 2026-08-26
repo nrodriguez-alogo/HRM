@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <header>
+        <div>Halter</div>
+            <div class="search-box">
+                <input
+                type="search"
+                id="search-input"
+                placeholder="Buscar caballo..."
+                autocomplete="off">
+                <button type="button" id="search-btn">Buscar</button>
+            </div>
+
+            <div> 
+                <button type="button" id="addHorse-btn"> + Agregar caballo</button>
+            </div>
+
+            <div>
+                <span id="userEmail"></span>
+                <button id="logoutBtn">Cerrar sesión</button>
+            </div>
+    </header>
+    <main>
+
+        <section>
+            <h3 class="section-title">Calendario/Agenda</h3></section>
+        <hr>
+        
+        <h3 class="section-title">Caballos</h3>
+            <div id="horseGrid" class="grid"></div>
+        </section>
+        
+        <hr>
+    </main>
+    <footer>Desarrollado por Natalia Rodríguez Bedoya</footer>
+
+    <!-- Add Horse Modal -->
+    <div id="horseModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Agregar caballo</h2>
+        
+        <form id="horseForm">
+        
+        <!-- Section 1: Horse Basic Information -->
+        <fieldset>
+            <legend>Información básica del caballo</legend>
+            
+            <div class="horse-input">
+                <label for="horseName">Nombre: </label>
+                <input type="text" id="horseName" name="name" required>
+            </div>
+
+            <div class="horse-input">
+                <label for="dateOfBirth">Fecha de nacimiento</label>
+                <input type="date" id="dateOfBirth" name="date_of_birth" required>
+            </div>
+
+            <div class="horse-input">
+            <label>Mi rol*</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="role" value="Propietario">Propietario</label>
+                    <label><input type="checkbox" name="role" value="Veterinario">Veterinario</label>
+                    <label><input type="checkbox" name="role" value="Administrador">Administrador</label>
+                    <label><input type="checkbox" name="role" value="Profesor">Profesor</label>
+                </div>
+            </div>
+
+            <div class="horse-input">
+                <label for="countryOfBirth">País de nacimiento:</label>
+                <input type="text" id="countryOfBirth" name="country_of_birth">
+            </div>
+
+            <div class="horse-input">
+                <label for="breeding_place">Criadero:</label>
+                <input type="text" id="breeding_place" name="breeding_place">
+            </div>
+
+            <div class="horse-input">
+                <label for="sex">Sexo</label>
+                    <select id="sex" name="sex">
+                        <option value="">Seleccionar..</option>
+                        <option value="male">Macho</option>
+                        <option value="female">Hembra</option>
+                    </select>
+            </div>
+
+            <div class="horse-input">
+                <label for="color">Color</label>
+                <input type="text" id="color" name="color">
+            </div>
+
+            <div class="horse-input">
+                <label for="breed">Raza</label>
+                <input type="text" id="breed" name="breed">
+            </div>
+
+            <div class="horse-input">
+                <label for="father">Padre</label>
+                <input type="text" id="father" name="father">
+            </div>
+
+            <div class="horse-input">
+                <label for="mother">Madre</label>
+                <input type="text" id="mother" name="mother">
+            </div>
+
+            <div class="horse-input">
+                <label for="mothersFather">Padre de la madre</label>
+                <input type="text" id="mothersFather" name="mothers_father">
+            </div>
+
+        </fieldset>
+
+        <!-- Section 2: Physical Description -->
+        <fieldset>
+            <legend>Descripción física</legend>
+            
+            <div class="horse-input">
+                <label for="headDescription">Cabeza</label>
+                <textarea id="headDescription" name="head_description" rows="3"></textarea>
+            </div>
+
+            <div class="horse-input">
+                <label for="lfDescription">LF</label>
+                <textarea id="lfDescription" name="lf_description" rows="3"></textarea>
+            </div>
+
+            <div class="horse-input">
+                <label for="rfDescription">RF</label>
+                <textarea id="rfDescription" name="rf_description" rows="3"></textarea>
+            </div>
+
+            <div class="horse-input">
+                <label for="lhDescription">LH</label>
+                <textarea id="lhDescription" name="lh_description" rows="3"></textarea>
+            </div>
+            
+            <div class="horse-input">
+                <label for="rhDescription">RH</label>
+                <textarea id="rhDescription" name="rh_description" rows="3"></textarea>
+            </div>
+
+            <div class="horse-input">
+                <label for="bodyDescription">Cuerpo y torso</label>
+                <textarea id="bodyDescription" name="body_description" rows="3"></textarea>
+            </div>
+
+        </fieldset>
+
+        <button type="submit">Save Horse</button>
+        </form>
+    </div>
+    </div>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    //Link to script
+    <script src="./script.js"></script>
+</body>
+</html>
