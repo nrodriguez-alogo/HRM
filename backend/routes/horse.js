@@ -10,7 +10,26 @@ const { getDatabase } = require("../database.js");
 //Import horse class
 const Horse = require("../models/Horse.js");
 
-//Route handler: listen for POST requests, add is the endpoint path, req is the request and res is the result
+//Image handling
+const multer = require("multer");
+const path = require("path");
+
+// Configure multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/uploads/");
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + path.extname(file.originalname);
+    cb(null, uniqueName);
+  }
+});
+
+const upload = multer({ storage });
+
+
+
+/* //Route handler: listen for POST requests, add is the endpoint path, req is the request and res is the result
  router.post("/add", async (req, res) => {
   try {
     //Getting data user input in form
@@ -32,7 +51,7 @@ const Horse = require("../models/Horse.js");
   } catch (error) { //telling the front end it didn't work
     res.json({success: false, error: error.message});
   }
-});
+}); */
 
 
 router.get("/", async (req, res) => {
@@ -48,12 +67,20 @@ router.get("/", async (req, res) => {
 
 
 // POST /api/horse — save horse data (without image)
-router.post("/", async (req, res) => {
+router.post("/", upload.single("image"), async (req, res) => {
   try {
+    console.log("req.file:", req.file);  // ← add this
+    console.log("req.body:", req.body);  // ← add this
     const { user_id, name, date_of_birth, roles, country_of_birth, breeding_place, sex, color, breed, father, mother, mothers_father, head_description, lf_description, rf_description, lh_description, rh_description, body_description } = req.body;
 
     if (!user_id || !name) {
       return res.json({ success: false, error: "user_id and name required" });
+    }
+
+    // Image path if file was uploaded
+    let imagePath = null;
+    if (req.file) {
+      imagePath = "uploads/" + req.file.filename;
     }
 
     const db = getDatabase();
@@ -76,6 +103,7 @@ router.post("/", async (req, res) => {
       lh_description,
       rh_description,
       body_description,
+      imagePath,
       createdAt: new Date()
     });
 
@@ -84,6 +112,35 @@ router.post("/", async (req, res) => {
     res.json({ success: false, error: error.message });
   }
 });
+
+
+// GET /api/horse/:id — get single horse
+router.get("/:id", async (req, res) => {
+  try {
+    const { ObjectId } = require("mongodb");
+    const horseId = req.params.id;
+
+    if (!ObjectId.isValid(horseId)) {
+      return res.status(400).json({ message: "Invalid horse ID" });
+    }
+
+    const db = getDatabase();
+    const horse = await db.collection("horses").findOne({
+      _id: new ObjectId(horseId)
+    });
+
+    if (!horse) {
+      return res.status(404).json({ message: "Horse not found" });
+    }
+
+    res.json(horse);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+//Image handling
+
 
 //Making router available to other files
 module.exports = router;

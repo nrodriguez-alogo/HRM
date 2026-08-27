@@ -1,0 +1,121 @@
+.horse-detail {
+  max-width: 900px;
+  margin: 40px auto;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.detail-image {
+  width: 100%;
+  height: 500px;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.detail-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detail-info {
+  padding: 50px;
+}
+
+.detail-info h2 {
+  font-size: 42px;
+  margin: 0 0 30px 0;
+  color: #2c3e50;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-bottom: 4px solid #111827;;
+  padding-bottom: 15px;
+}
+
+.detail-info section {
+  margin-bottom: 40px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.detail-info section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.detail-info h3 {
+  font-size: 20px;
+  color: #111827;
+  margin: 0 0 15px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.detail-info p {
+  margin: 12px 0;
+  line-height: 1.8;
+  color: #555;
+  font-size: 16px;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 20px;
+}
+
+.detail-info strong {
+  color: #2c3e50;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.detail-info p strong {
+  display: inline;
+  margin-bottom: 0;
+}
+
+/* Header styling */
+header {
+  padding: 20px 30px;
+  background: #111827;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+header a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+header a:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Make sections into cards */
+.detail-info section {
+  background: #f9fafb;
+  padding: 25px;
+  border-radius: 8px;
+  border: none;
+  border-left: 4px solid #111827;;
+  margin-bottom: 20px;
+}
+
+.detail-info section p {
+  margin: 15px 0;
+}

@@ -64,7 +64,7 @@
             </div>
 
             <div class="horse-input">
-            <label>Mi rol*</label>
+            <label>Mi rol</label>
                 <div class="checkbox-group">
                     <label><input type="checkbox" name="role" value="Propietario">Propietario</label>
                     <label><input type="checkbox" name="role" value="Veterinario">Veterinario</label>
@@ -155,7 +155,17 @@
 
         </fieldset>
 
-        <button type="submit">Save Horse</button>
+        <!-- File input for image -->
+        <fieldset>
+            <legend>Foto del caballo</legend>
+            
+            <div class="horse-input">
+                <label for="horseImage">Cargar foto</label>
+                <input type="file" id="horseImage" name="image" accept="image/*">
+            </div>
+        </fieldset>
+
+        <button type="submit">Agregar caballo</button>
         </form>
     </div>
     </div>

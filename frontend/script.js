@@ -63,14 +63,22 @@ function renderHorses(horses) {
   grid.innerHTML = "";  // clear before repainting
   
   horses.forEach(horse => {
+    const imageSrc = horse.imagePath || "uploads/placeholder.png"; 
     const article = document.createElement("article");
     article.innerHTML = `
       <div class="image-container">
-        <img src="uploads/${horse._id}_profile.jpg" alt="${horse.name}">
+        <img src="${imageSrc}" alt="${horse.name}">
       </div>
       <h3>${horse.name}</h3>
       <p>Nacimiento: ${horse.date_of_birth}</p>
     `;
+
+    // Click to go to detail page
+    article.addEventListener("click", () => {
+      console.log("clicked object");
+      window.location.href = `detail.html?id=${horse._id}`;
+    });
+
     grid.appendChild(article);
   });
 }
@@ -136,12 +144,28 @@ horseForm.addEventListener("submit", async (e) => {
     body_description: formData.get("body_description")
   };
 
-  console.log("Horse data:", horseData);
+    // Create a new FormData with the horse data
+  const submitData = new FormData();
+  
+  // Add all horse fields
+  Object.keys(horseData).forEach(key => {
+    if (Array.isArray(horseData[key])) {
+      horseData[key].forEach(val => submitData.append(key, val));
+    } else if (horseData[key]) {
+      submitData.append(key, horseData[key]);
+    }
+  });
+
+  // Add the image file if selected
+  const imageFile = formData.get("image");
+  if (imageFile) {
+    submitData.append("image", imageFile);
+  }
+
   try {
     const response = await fetch("/api/horse", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(horseData)
+      body: submitData 
     });
 
     const result = await response.json();
