@@ -41,49 +41,127 @@ function renderHorseDetail(horse) {
   // Format date
     const dateString = horse.date_of_birth.split('T')[0];  // gets "2006-12-31"
     const formattedDate = new Date(dateString + "T00:00:00").toLocaleDateString("es-ES");
+    
+    // Get image
+    const imageSrc = horse.imagePath || "uploads/placeholder.png"; 
   
   // Calculate age
   const age = calculateAge(horse.date_of_birth);
   
   detail.innerHTML = `
-    <article class="horse-detail">
-      <div class="detail-image">
-        <img src="uploads/${horse._id}_profile.jpg" alt="${horse.name}">
-      </div>
+  <article class="horse-detail">
+    <div class="detail-image">
+      <img src="${imageSrc}" alt="${horse.name}">
+    </div>
+    
+    <div class="detail-info">
+      <h2>${horse.name}</h2>
       
-      <div class="detail-info">
-        <h2>${horse.name}</h2>
+      <!-- Información básica -->
+            <!-- Información básica -->
+      <section class="accordion-section">
+        <h3 class="accordion-header">Información básica</h3>
+        <div class="accordion-content">
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Fecha de nacimiento:</strong>
+                    <span>${formattedDate}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Edad:</strong>
+                    <span>${age} years</span>
+                </div>
+                <div class="info-item">
+                    <strong>Sexo:</strong>
+                    <span>${horse.sex || "N/A"}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Color:</strong>
+                    <span>${horse.color || "N/A"}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Raza:</strong>
+                    <span>${horse.breed || "N/A"}</span>
+                </div>
+                <div class="info-item">
+                    <strong>País de nacimiento:</strong>
+                    <span>${horse.country_of_birth || "N/A"}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Criadero:</strong>
+                    <span>${horse.breeding_place || "N/A"}</span>
+                </div>
+            </div>
+        </div>
+      </section>
+      
+      <!-- Pedigree -->
+      <section class="accordion-section">
+        <h3 class="accordion-header">Pedigree</h3>
+        <div class="accordion-content">
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Padre:</strong>
+                    <span>${horse.father || "N/A"}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Madre:</strong>
+                    <span>${horse.mother || "N/A"}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Padre de la madre:</strong>
+                    <span>${horse.mothers_father || "N/A"}</span>
+                </div>
+            </div>
+        </div>
+      </section>
+      
+      <!-- Descripción física -->
+      <section class="accordion-section">
+        <h3 class="accordion-header">Descripción física</h3>
+        <div class="accordion-content">
+            <div class="description-grid">
+                <div class="info-item">
+                    <strong>Cabeza:</strong>
+                    <span>${horse.head_description || "N/A"}</span>
+                </div>
+                <div class="info-item">
+                    <strong>LF:</strong>
+                    <span>${horse.lf_description || "N/A"}</span>
+                </div>
+                <div class="info-item">
+                    <strong>RF:</strong>
+                    <span>${horse.rf_description || "N/A"}</span>
+                </div>
+                <div class="info-item">
+                    <strong>LH:</strong>
+                    <span>${horse.lh_description || "N/A"}</span>
+                </div>
+                <div class="info-item">
+                    <strong>RH:</strong>
+                    <span>${horse.rh_description || "N/A"}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Cuerpo y torso:</strong>
+                    <span>${horse.body_description || "N/A"}</span>
+                </div>
+            </div>
+        </div>
+      </section>
+    </div>
+  </article>
+`;
+
+    // Add accordion toggle handlers
+    document.querySelectorAll(".accordion-header").forEach(header => {
+    header.addEventListener("click", () => {
+        const content = header.nextElementSibling;
+        const section = header.parentElement;
         
-        <section>
-          <h3>Información básica</h3>
-          <p><strong>Fecha de nacimiento:</strong> ${formattedDate}</p>
-          <p><strong>Edad:</strong> ${age} years</p>
-          <p><strong>Sexo:</strong> ${horse.sex || "N/A"}</p>
-          <p><strong>Color:</strong> ${horse.color || "N/A"}</p>
-          <p><strong>Raza:</strong> ${horse.breed || "N/A"}</p>
-          <p><strong>País de nacimiento:</strong> ${horse.country_of_birth || "N/A"}</p>
-          <p><strong>Criadero:</strong> ${horse.breeding_place || "N/A"}</p>
-        </section>
-        
-        <section>
-          <h3>Pedigree</h3>
-          <p><strong>Padre:</strong> ${horse.father || "N/A"}</p>
-          <p><strong>Madre:</strong> ${horse.mother || "N/A"}</p>
-          <p><strong>Padre de la madre:</strong> ${horse.mothers_father || "N/A"}</p>
-        </section>
-        
-        <section>
-          <h3>Descripción física</h3>
-          <p><strong>Cabeza:</strong> ${horse.head_description || "N/A"}</p>
-          <p><strong>LF:</strong> ${horse.lf_description || "N/A"}</p>
-          <p><strong>RF:</strong> ${horse.rf_description || "N/A"}</p>
-          <p><strong>LH:</strong> ${horse.lh_description || "N/A"}</p>
-          <p><strong>RH:</strong> ${horse.rh_description || "N/A"}</p>
-          <p><strong>Cuerpo y torso:</strong> ${horse.body_description || "N/A"}</p>
-        </section>
-      </div>
-    </article>
-  `;
+        section.classList.toggle("active");
+        content.style.display = section.classList.contains("active") ? "block" : "none";
+    });
+    });
 }
 
 function calculateAge(birthDate) {
