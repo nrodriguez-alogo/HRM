@@ -11,11 +11,17 @@
     <a href="index.html">← Regresar</a>
   </header>
 
-  <div>
+  <div class="detail-container">
+    <!-- Left sidebar - fixed -->
+    <aside class="horse-sidebar">
+      <div id="horseSidebar"></div>
+    </aside>
+
+    <!-- Main content - scrollable -->
+    <main class="horse-main">
+      <div id="horseDetail"></div>
+    </main>
   </div>
-  <main id="horseDetail">
-    <!-- Horse data loads here -->
-  </main>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>

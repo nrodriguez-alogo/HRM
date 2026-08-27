@@ -36,24 +36,27 @@ async function loadHorseDetail() {
 }
 
 function renderHorseDetail(horse) {
-  const detail = document.getElementById("horseDetail");
-  
-  // Format date
+    const detail = document.getElementById("horseDetail");
     const dateString = horse.date_of_birth.split('T')[0];  // gets "2006-12-31"
-    const formattedDate = new Date(dateString + "T00:00:00").toLocaleDateString("es-ES");
-    
-    // Get image
-    const imageSrc = horse.imagePath || "uploads/placeholder.png"; 
+    const formattedDate = new Date(dateString + "T00:00:00").toLocaleDateString("es-ES");  // Format date
+    const imageSrc = horse.imagePath || "uploads/placeholder.png"; // Get image
+    const age = calculateAge(horse.date_of_birth); // Calculate age
   
-  // Calculate age
-  const age = calculateAge(horse.date_of_birth);
+  const sidebarHtml= `
+  <div class="sidebar-image">
+      <img src="${imageSrc}" alt="${horse.name}">
+    </div>
+    <div class="sidebar-info">
+      <h2>${horse.name}</h2>
+      <p><strong>Fecha de nacimiento:</strong> ${formattedDate}</p>
+      <p><strong>Edad:</strong> ${age} years</p>
+    </div>
+  `;
+  document.getElementById("horseSidebar").innerHTML = sidebarHtml;
   
   detail.innerHTML = `
   <article class="horse-detail">
-    <div class="detail-image">
-      <img src="${imageSrc}" alt="${horse.name}">
-    </div>
-    
+   
     <div class="detail-info">
       <h2>${horse.name}</h2>
       
