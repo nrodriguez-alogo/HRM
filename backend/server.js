@@ -13,8 +13,13 @@ const { connectDatabase } = require("./database.js");
 const horseRoutes = require("./routes/horse.js");
 app.use("/api/horse", horseRoutes);
 
+//Users database
 const userRoutes = require("./routes/user.js");
 app.use("/api/user", userRoutes);
+
+//Passport database
+const passportRoutes = require("./routes/passport.js");
+app.use("/api/passport", passportRoutes);
 
 // Serve frontend files
 app.use(express.static(path.join(__dirname, "../frontend")));

@@ -71,7 +71,7 @@ router.post("/", upload.single("image"), async (req, res) => {
   try {
     console.log("req.file:", req.file);  // ← add this
     console.log("req.body:", req.body);  // ← add this
-    const { user_id, name, date_of_birth, roles, country_of_birth, breeding_place, sex, color, breed, father, mother, mothers_father, head_description, lf_description, rf_description, lh_description, rh_description, body_description } = req.body;
+    const { user_id, name, date_of_birth, chip_number, fec_register, roles, country_of_birth, breeding_place, sex, color, breed, father, mother, mothers_father, head_description, lf_description, rf_description, lh_description, rh_description, body_description } = req.body;
 
     if (!user_id || !name) {
       return res.json({ success: false, error: "user_id and name required" });
@@ -88,6 +88,8 @@ router.post("/", upload.single("image"), async (req, res) => {
       user_id,
       name,
       date_of_birth,
+      fec_register,
+      chip_number,
       roles: roles || [],
       country_of_birth,
       breeding_place,
@@ -138,8 +140,6 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
-//Image handling
 
 
 //Making router available to other files

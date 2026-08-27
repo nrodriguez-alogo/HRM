@@ -127,6 +127,8 @@ horseForm.addEventListener("submit", async (e) => {
     user_id: uid,
     name: formData.get("name"),
     date_of_birth: formData.get("date_of_birth"),
+    chip_number: formData.get("chip_number"),
+    fec_register: formData.get("fec_register"),
     roles,  // array of selected roles
     country_of_birth: formData.get("country_of_birth"),
     breeding_place: formData.get("breeding_place"),
@@ -171,7 +173,33 @@ horseForm.addEventListener("submit", async (e) => {
     const result = await response.json();
 
     if (result.success) {
-      console.log("Horse saved:", result);
+      //Save horse_id or newly created horse
+      const horseId = result.id;
+
+
+      const passportData = {
+        horse_id: horseId,
+        user_id: localStorage.getItem("uid"),
+        passport_expedition_date: formData.get("passport_expedition_date"),  // your new field
+      };
+
+      const secondResponse = await fetch("/api/passport", {  // different endpoint
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(passportData)
+      });
+
+      const secondResult = await secondResponse.json();
+
+      if (secondResult.success) {
+        console.log("Both saved successfully");
+        modal.classList.remove("active");
+        horseForm.reset();
+        loadHorses();
+      } else {
+        console.error("Error saving related data:", secondResult.error);
+      }
+
       modal.classList.remove("active");  // close modal
       horseForm.reset();  // clear form
       loadHorses();  // refresh grid
