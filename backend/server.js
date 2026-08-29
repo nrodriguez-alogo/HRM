@@ -21,6 +21,14 @@ app.use("/api/user", userRoutes);
 const passportRoutes = require("./routes/passport.js");
 app.use("/api/passport", passportRoutes);
 
+//Veterinarian database
+const veterinarianRoutes = require("./routes/veterinarian.js");
+app.use("/api/veterinarian", veterinarianRoutes);
+
+//Vaccines database
+const vaccineRoutes = require("./routes/vaccine.js");
+app.use("/api/vaccine", vaccineRoutes);
+
 // Serve frontend files
 app.use(express.static(path.join(__dirname, "../frontend")));
 

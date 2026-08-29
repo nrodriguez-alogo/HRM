@@ -47,7 +47,50 @@
     </div>
   </div>
 
-  <!-- Firebase SDK -->
+    <!-- Vaccine Modal -->
+  <div id="vaccineModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Registro Vacunas</h2>
+      
+      <form id="vaccineForm">
+        <div class="horse-input">
+          <label for="vaccineDate">Fecha de Vacunación *</label>
+          <input type="date" id="vaccineDate" name="vaccine_date" required>
+        </div>
+
+        <div class="horse-input">
+          <label for="vaccineName">Nombre de Vacuna *</label>
+          <input type="text" id="vaccineName" name="vaccine_name" required>
+        </div>
+
+        <div class="horse-input">
+          <label for="vaccineExpiration">Fecha de Expiración *</label>
+          <input type="date" id="vaccineExpiration" name="vaccine_expiration" required>
+        </div>
+
+        <div class="horse-input">
+          <label for="batchNumber">Número de Lote *</label>
+          <input type="text" id="batchNumber" name="batch_number" required>
+        </div>
+
+        <div class="horse-input">
+          <label for="route">Ruta/Vía *</label>
+          <input type="text" id="route" name="route" required>
+        </div>
+
+        <div class="horse-input">
+          <label for="veterinarian">Veterinario *</label>
+          <select id="veterinarian" name="veterinarian_id" required>
+            <option value="">Seleccionar veterinario</option>
+          </select>
+        </div>
+
+        <button type="submit">Guardar</button>
+      </form>
+    </div>
+  </div>
+    <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="detail-script.js" defer></script>

@@ -43,7 +43,7 @@ async function loadHorseDetail() {
     const horse = await response.json();
     console.log("Horse data:", horse); 
     console.log("Passports:", horse.passport); 
-    
+
     renderHorseDetail(horse);
   } catch (error) {
     console.error(error);
@@ -89,6 +89,9 @@ function renderHorseDetail(horse) {
       <h2>${horse.name}</h2>
       <p><strong>Fecha de nacimiento:</strong> ${formattedDate}</p>
       <p><strong>Edad:</strong> ${age} years</p>
+      <a href="https://equisoft.com.co/app/zparticipacion_general.php?Tipo_busqueda=7&id=${horse.fec_register}" target="_blank">
+        Ver en equisoft
+      </a>
     </div>
   `;
   document.getElementById("horseSidebar").innerHTML = sidebarHtml;
@@ -198,6 +201,24 @@ function renderHorseDetail(horse) {
         </div>
       </section>
 
+      <section class="accordion-section">
+      <h3 class="accordion-header">Vacunas</h3>
+        <div class="accordion-content">
+        </div>
+      </section>
+
+      <section class="accordion-section">
+      <h3 class="accordion-header">Examenes Médicos</h3>
+        <div class="accordion-content">
+        </div>
+      </section>
+
+      <section class="accordion-section">
+      <h3 class="accordion-header">Historia Clínica</h3>
+        <div class="accordion-content">
+        </div>
+      </section>
+
     </div>
   </article>
 `;
@@ -289,6 +310,97 @@ passportForm.addEventListener("submit", async (e) => {
     console.error("Fetch error:", error);
   }
 });
+
+
+//Modal window add vaccines
+const vaccineModal = document.getElementById("vaccineModal");
+const vaccineForm = document.getElementById("vaccineForm");
+const closeVaccineBtn = vaccineModal.querySelector(".close");
+
+// Close modal
+closeVaccineBtn.addEventListener("click", () => {
+  vaccineModal.classList.remove("active");
+});
+
+// Click outside to close
+window.addEventListener("click", (event) => {
+  if (event.target === vaccineModal) {
+    vaccineModal.classList.remove("active");
+  }
+});
+
+// Load vets and populate dropdown
+async function loadVeterinarians() {
+  try {
+    const response = await fetch(`/api/veterinarian`);
+    
+    const vets = await response.json();  // ← declare first
+    console.log("Vets received:", vets);  // ← then use it
+    
+    const select = document.getElementById("veterinarian");
+    vets.forEach(vet => {
+      const option = document.createElement("option");
+      option.value = vet._id;
+      option.textContent = vet.name;
+      select.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Error loading vets:", error);
+  }
+}
+
+// Handle vaccine button click
+document.querySelectorAll(".record-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    const recordType = e.target.dataset.record;
+    
+    if (recordType === "passport") {
+      passportModal.classList.add("active");
+    } else if (recordType === "vaccines") {
+      loadVeterinarians();  // Load vets when opening modal
+      vaccineModal.classList.add("active");
+    }
+  });
+});
+
+// Handle vaccine form submission
+vaccineForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  const vaccineData = {
+    horse_id: currentHorseId,
+    user_id: localStorage.getItem("uid"),
+    vaccine_date: document.getElementById("vaccineDate").value,
+    vaccine_name: document.getElementById("vaccineName").value,
+    vaccine_expiration: document.getElementById("vaccineExpiration").value,
+    batch_number: document.getElementById("batchNumber").value,
+    route: document.getElementById("route").value,
+    veterinarian_id: document.getElementById("veterinarian").value
+  };
+
+  try {
+    const response = await fetch("/api/vaccine", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(vaccineData)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log("Vaccine saved");
+      vaccineModal.classList.remove("active");
+      vaccineForm.reset();
+    } else {
+      console.error("Error:", result.error);
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+});
+
+// Load vets on page load
+loadVeterinarians();
 
 // Load on page load
 loadHorseDetail();
