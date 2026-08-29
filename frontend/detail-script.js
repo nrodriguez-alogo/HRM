@@ -11,6 +11,19 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
+// Find all buttons with class "record-btn"
+document.querySelectorAll(".record-btn")
+  
+// Loop through each button
+.forEach(btn => {
+  
+  // ATTACH a listener to this button
+  btn.addEventListener("click", (e) => {
+    const recordType = e.target.dataset.record;
+    console.log("Clicked:", recordType);
+  });
+});
+
 async function loadHorseDetail() {
   // Get horse ID from URL
   const params = new URLSearchParams(window.location.search);
@@ -28,6 +41,9 @@ async function loadHorseDetail() {
     if (!response.ok) throw new Error("Horse not found");
     
     const horse = await response.json();
+    console.log("Horse data:", horse); 
+    console.log("Passports:", horse.passport); 
+    
     renderHorseDetail(horse);
   } catch (error) {
     console.error(error);
@@ -35,12 +51,35 @@ async function loadHorseDetail() {
   }
 }
 
+
 function renderHorseDetail(horse) {
     const detail = document.getElementById("horseDetail");
     const dateString = horse.date_of_birth.split('T')[0];  // gets "2006-12-31"
     const formattedDate = new Date(dateString + "T00:00:00").toLocaleDateString("es-ES");  // Format date
     const imageSrc = horse.imagePath || "uploads/placeholder.png"; // Get image
     const age = calculateAge(horse.date_of_birth); // Calculate age
+    currentHorseId = horse._id; //Save horse id for future use
+
+      // BUILD PASSPORT LIST (add this here)
+  const passportList = horse.passport && horse.passport.length > 0
+    ? horse.passport
+        .sort((a, b) => new Date(b.passport_expedition_date) - new Date(a.passport_expedition_date))
+        .map(p => {
+          const expeditionDate = new Date(p.passport_expedition_date);
+          const expirationDate = new Date(expeditionDate.getFullYear() + 1, expeditionDate.getMonth(), expeditionDate.getDate());
+          const isExpired = new Date() > expirationDate;
+          const statusIcon = isExpired ? "❌" : "✅";
+          const formattedDate = expeditionDate.toLocaleDateString("es-ES");
+          
+          return `
+            <div class="passport-item">
+              <span>${statusIcon}</span>
+              <span>${formattedDate}</span>
+            </div>
+          `;
+        })
+        .join("")
+    : `<p>No passports registered</p>`;
   
   const sidebarHtml= `
   <div class="sidebar-image">
@@ -58,9 +97,7 @@ function renderHorseDetail(horse) {
   <article class="horse-detail">
    
     <div class="detail-info">
-      <h2>${horse.name}</h2>
-      
-      <!-- Información básica -->
+      <br>
             <!-- Información básica -->
       <section class="accordion-section">
         <h3 class="accordion-header">Información básica</h3>
@@ -151,6 +188,16 @@ function renderHorseDetail(horse) {
             </div>
         </div>
       </section>
+
+      <section class="accordion-section">
+      <h3 class="accordion-header">Pasaportes</h3>
+        <div class="accordion-content">
+            <div class="passport-list">
+            ${passportList}
+            </div>
+        </div>
+      </section>
+
     </div>
   </article>
 `;
@@ -177,6 +224,71 @@ function calculateAge(birthDate) {
   }
   return age;
 }
+
+
+//Modal window to add passport
+const passportModal = document.getElementById("passportModal");
+const passportForm = document.getElementById("passportForm");
+const closeBtn = passportModal.querySelector(".close");
+let currentHorseId = null;
+
+// Close modal
+closeBtn.addEventListener("click", () => {
+  passportModal.classList.remove("active");
+});
+
+// Click outside modal to close
+window.addEventListener("click", (event) => {
+  if (event.target === passportModal) {
+    passportModal.classList.remove("active");
+  }
+});
+
+// Handle record button clicks
+document.querySelectorAll(".record-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    const recordType = e.target.dataset.record;
+    
+    if (recordType === "passport") {
+      passportModal.classList.add("active");
+    }
+    // Add other record types later
+  });
+});
+
+// Handle passport form submission
+passportForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  const expeditionDate = document.getElementById("expeditionDate").value;
+  
+  const passportData = {
+    horse_id: currentHorseId,
+    user_id: localStorage.getItem("uid"),
+    passport_expedition_date: expeditionDate,
+    createdAt: new Date().toISOString()
+  };
+
+  try {
+    const response = await fetch("/api/passport", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(passportData)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log("Passport saved");
+      passportModal.classList.remove("active");
+      passportForm.reset();
+    } else {
+      console.error("Error:", result.error);
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+});
 
 // Load on page load
 loadHorseDetail();

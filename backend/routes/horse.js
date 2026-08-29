@@ -127,15 +127,25 @@ router.get("/:id", async (req, res) => {
     }
 
     const db = getDatabase();
-    const horse = await db.collection("horses").findOne({
-      _id: new ObjectId(horseId)
-    });
+    const horse = await db.collection("horses").aggregate([
+      {
+        $match: { _id: new ObjectId(horseId) }
+      },
+      {
+        $lookup: {
+          from: "passports",        // collection to join
+          localField: "_id",        // field in horses
+          foreignField: "horse_id", // field in passports
+          as: "passport"            // name of output array
+        }
+      }
+    ]).toArray();
 
     if (!horse) {
       return res.status(404).json({ message: "Horse not found" });
     }
 
-    res.json(horse);
+    res.json(horse[0]);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

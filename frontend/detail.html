@@ -19,8 +19,32 @@
 
     <!-- Main content - scrollable -->
     <main class="horse-main">
+        <!-- Record buttons -->
+        <div class="record-buttons">
+        <button class="record-btn" data-record="passport">Registro Pasaporte</button>
+        <button class="record-btn" data-record="vaccines">Registro Vacunas</button>
+        <button class="record-btn" data-record="medical">Registro Examen Médico</button>
+        <button class="record-btn" data-record="clinical">Registro Historia Clínica</button>
+        </div>
       <div id="horseDetail"></div>
+      
     </main>
+  </div>
+
+    <!-- Passport Modal -->
+  <div id="passportModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Registro Pasaporte</h2>
+      
+      <form id="passportForm">
+        <div class="horse-input">
+          <label for="expeditionDate">Fecha de Expedición</label>
+          <input type="date" id="expeditionDate" name="expedition_date" required>
+        </div>
+        <button type="submit">Guardar</button>
+      </form>
+    </div>
   </div>
 
   <!-- Firebase SDK -->
