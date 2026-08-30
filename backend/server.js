@@ -29,6 +29,14 @@ app.use("/api/veterinarian", veterinarianRoutes);
 const vaccineRoutes = require("./routes/vaccine.js");
 app.use("/api/vaccine", vaccineRoutes);
 
+//Lab tests database
+const labTestRoutes = require("./routes/lab-test.js");
+app.use("/api/lab-test", labTestRoutes);
+
+//Hauling database
+const haulingRoutes = require("./routes/hauling.js");
+app.use("/api/hauling", haulingRoutes);
+
 // Serve frontend files
 app.use(express.static(path.join(__dirname, "../frontend")));
 

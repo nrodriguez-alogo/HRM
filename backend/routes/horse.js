@@ -127,21 +127,158 @@ router.get("/:id", async (req, res) => {
     }
 
     const db = getDatabase();
+    
     const horse = await db.collection("horses").aggregate([
       {
         $match: { _id: new ObjectId(horseId) }
       },
       {
         $lookup: {
-          from: "passports",        // collection to join
-          localField: "_id",        // field in horses
-          foreignField: "horse_id", // field in passports
-          as: "passport"            // name of output array
+          from: "passports",
+          localField: "_id",
+          foreignField: "horse_id",
+          as: "passport"
         }
-      }
+      },
+      {
+        $lookup: {
+          from: "vaccines",
+          localField: "_id",
+          foreignField: "horse_id",
+          as: "vaccines"
+        }
+      },
+      {
+        $lookup: {
+          from: "veterinarians",
+          localField: "vaccines.veterinarian_id",
+          foreignField: "_id",
+          as: "vets"
+        }
+      },
+      {
+        $addFields: {
+          vaccines: {
+            $map: {
+              input: "$vaccines",
+              as: "vaccine",
+              in: {
+                $mergeObjects: [
+                  "$$vaccine",
+                  {
+                    vet_name: {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: "$vets",
+                            as: "vet",
+                            cond: { $eq: ["$$vet._id", "$$vaccine.veterinarian_id"] }
+                          }
+                        },
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "lab_tests",
+          localField: "_id",
+          foreignField: "horse_id",
+          as: "lab_tests"
+        }
+      },
+      {
+        $lookup: {
+          from: "veterinarians",
+          localField: "lab_tests.veterinarian_id",
+          foreignField: "_id",
+          as: "lab_vets"
+        }
+      },
+      {
+        $addFields: {
+          lab_tests: {
+            $map: {
+              input: "$lab_tests",
+              as: "test",
+              in: {
+                $mergeObjects: [
+                  "$$test",
+                  {
+                    vet_name: {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: "$lab_vets",
+                            as: "vet",
+                            cond: { $eq: ["$$vet._id", "$$test.veterinarian_id"] }
+                          }
+                        },
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "haulings",
+          localField: "_id",
+          foreignField: "horse_id",
+          as: "haulings"
+        }
+      },
+      {
+        $lookup: {
+          from: "veterinarians",
+          localField: "haulings.veterinarian_id",
+          foreignField: "_id",
+          as: "hauling_vets"
+        }
+      },
+      {
+        $addFields: {
+          haulings: {
+            $map: {
+              input: "$haulings",
+              as: "hauling",
+              in: {
+                $mergeObjects: [
+                  "$$hauling",
+                  {
+                    vet_name: {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: "$hauling_vets",
+                            as: "vet",
+                            cond: { $eq: ["$$vet._id", "$$hauling.veterinarian_id"] }
+                          }
+                        },
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      { $project: { vets: 0, lab_vets: 0, hauling_vets: 0 } }
     ]).toArray();
 
-    if (!horse) {
+    if (!horse || horse.length === 0) {
       return res.status(404).json({ message: "Horse not found" });
     }
 
@@ -150,7 +287,6 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 
 //Making router available to other files
 module.exports = router;

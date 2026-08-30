@@ -19,14 +19,34 @@
 
     <!-- Main content - scrollable -->
     <main class="horse-main">
-        <!-- Record buttons -->
-        <div class="record-buttons">
-        <button class="record-btn" data-record="passport">Registro Pasaporte</button>
-        <button class="record-btn" data-record="vaccines">Registro Vacunas</button>
-        <button class="record-btn" data-record="medical">Registro Examen Médico</button>
-        <button class="record-btn" data-record="clinical">Registro Historia Clínica</button>
+        
+
+        <!-- Tab Navigation -->
+        <div class="detail-tabs">
+          <button class="tab-btn active" data-tab="info">Información</button>
+          <button class="tab-btn" data-tab="history">Historial</button>
         </div>
-      <div id="horseDetail"></div>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+          <!-- Información Tab -->
+          <div id="info-tab" class="tab active">
+            <!-- Record buttons -->
+            <div class="record-buttons">
+            <button class="record-btn" data-record="passport">Registro Pasaporte</button>
+            <button class="record-btn" data-record="vaccines">Registro Vacunas</button>
+            <button class="record-btn" data-record="medical">Registro Examen de Laboratorio</button>
+            <button class="record-btn" data-record="hauling">Registro Traslado</button>
+            </div>
+            <div id="horseDetail"></div>
+          </div>
+
+            <!-- Historial Tab -->
+          <div id="history-tab" class="tab">
+            <div id="horseTimeline"></div>
+          </div>
+        </div>
+      
       
     </main>
   </div>
@@ -82,6 +102,98 @@
         <div class="horse-input">
           <label for="veterinarian">Veterinario *</label>
           <select id="veterinarian" name="veterinarian_id" required>
+            <option value="">Seleccionar veterinario</option>
+          </select>
+        </div>
+
+        <button type="submit">Guardar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lab Test Modal -->
+  <div id="labTestModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Registro Examen Laboratorio</h2>
+      
+      <form id="labTestForm">
+        <div class="horse-input">
+          <label for="testDate">Fecha de Prueba *</label>
+          <input type="date" id="testDate" name="test_date" required>
+        </div>
+
+        <div class="horse-input">
+          <label for="testedFor">Probado Para *</label>
+          <input type="text" id="testedFor" name="tested_for" placeholder="Ej: Anemia, Infección" required>
+        </div>
+
+        <div class="horse-input">
+          <label for="testType">Tipo de Prueba *</label>
+          <input type="text" id="testType" name="test_type" placeholder="Ej: Análisis de sangre" required>
+        </div>
+
+        <div class="horse-input">
+          <label for="testResult">Resultado *</label>
+          <textarea id="testResult" name="test_result" rows="3" required></textarea>
+        </div>
+
+        <div class="horse-input">
+          <label for="laboratory">Laboratorio Oficial *</label>
+          <input type="text" id="laboratory" name="official_laboratory" required>
+        </div>
+
+        <div class="horse-input">
+          <label for="labVeterinarian">Veterinario *</label>
+          <select id="labVeterinarian" name="veterinarian_id" required>
+            <option value="">Seleccionar veterinario</option>
+          </select>
+        </div>
+
+        <button type="submit">Guardar</button>
+      </form>
+    </div>
+  </div>
+  <!-- Hauling Modal -->
+  <div id="haulingModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Registro Transporte</h2>
+      
+      <form id="haulingForm">
+        <div class="horse-input">
+          <label for="haulingDate">Fecha *</label>
+          <input type="date" id="haulingDate" name="date" required>
+        </div>
+
+        <div class="horse-input">
+          <label for="haulingCity">Ciudad *</label>
+          <input type="text" id="haulingCity" name="city" required>
+        </div>
+
+        <div class="horse-input">
+          <label for="haulingCountry">País *</label>
+          <input type="text" id="haulingCountry" name="country" required>
+        </div>
+
+        <div class="horse-input">
+          <label for="haulingPurpose">Propósito *</label>
+          <input type="text" id="haulingPurpose" name="purpose" placeholder="Ej: Competencia, Venta" required>
+        </div>
+
+        <div class="horse-input">
+          <label for="haulingDestination">Destino *</label>
+          <input type="text" id="haulingDestination" name="destination" required>
+        </div>
+
+        <div class="horse-input">
+          <label for="haulingDuration">Duración (días) *</label>
+          <input type="number" id="haulingDuration" name="duration" min="1" required>
+        </div>
+
+        <div class="horse-input">
+          <label for="haulingVeterinarian">Veterinario *</label>
+          <select id="haulingVeterinarian" name="veterinarian_id" required>
             <option value="">Seleccionar veterinario</option>
           </select>
         </div>
