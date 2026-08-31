@@ -13,16 +13,23 @@ const auth = firebase.auth();
 
 // Find all buttons with class "record-btn"
 document.querySelectorAll(".record-btn")
-  
-// Loop through each button
-.forEach(btn => {
-  
-  // ATTACH a listener to this button
-  btn.addEventListener("click", (e) => {
-    const recordType = e.target.dataset.record;
-    console.log("Clicked:", recordType);
-  });
-});
+    // Loop through each button
+    .forEach(btn => {
+    
+    // ATTACH a listener to this button
+    btn.addEventListener("click", (e) => {
+        const recordType = e.target.dataset.record;
+        console.log("Clicked:", recordType);
+    });
+    });
+
+//Date handling
+function formatDateString(dateString) {
+  // Parse YYYY-MM-DD format without timezone issues
+  const date = dateString.split('T')[0]; // Get just the date part "YYYY-MM-DD"
+  const [year, month, day] = date.split('-');
+  return `${day}/${month}/${year}`;
+}
 
 // Tab switching
 document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -70,7 +77,7 @@ async function loadHorseDetail() {
 function renderHorseDetail(horse) {
     const detail = document.getElementById("horseDetail");
     const dateString = horse.date_of_birth.split('T')[0];  // gets "2006-12-31"
-    const formattedDate = new Date(dateString + "T00:00:00").toLocaleDateString("es-ES");  // Format date
+    const formattedDate = formatDateString(dateString);  // Format date
     const imageSrc = horse.imagePath || "uploads/placeholder.png"; // Get image
     const age = calculateAge(horse.date_of_birth); // Calculate age
     currentHorseId = horse._id; //Save horse id for future use
@@ -84,7 +91,7 @@ function renderHorseDetail(horse) {
           const expirationDate = new Date(expeditionDate.getFullYear() + 1, expeditionDate.getMonth(), expeditionDate.getDate());
           const isExpired = new Date() > expirationDate;
           const statusIcon = isExpired ? "❌" : "✅";
-          const formattedDate = expeditionDate.toLocaleDateString("es-ES");
+          const formattedDate = formatDateString(p.passport_expedition_date);
           
           return `
             <div class="passport-item">
@@ -114,8 +121,8 @@ function renderHorseDetail(horse) {
                 ${horse.vaccines
                 .sort((a, b) => new Date(b.vaccine_date) - new Date(a.vaccine_date))
                 .map(v => {
-                    const vaccineDate = new Date(v.vaccine_date).toLocaleDateString("es-ES");
-                    const expirationDate = new Date(v.vaccine_expiration).toLocaleDateString("es-ES");
+                    const vaccineDate = formatDateString(v.vaccine_date);
+                    const expirationDate = formatDateString(v.vaccine_expiration);
                     const vetName = v.vet_name?.name || "N/A";
                     
                     return `
@@ -153,7 +160,7 @@ function renderHorseDetail(horse) {
                 ${horse.lab_tests
                 .sort((a, b) => new Date(b.test_date) - new Date(a.test_date))
                 .map(t => {
-                    const testDate = new Date(t.test_date).toLocaleDateString("es-ES");
+                    const testDate = formatDateString(t.test_date);
                     const vetName = t.vet_name?.name || "N/A";
                     
                     return `
@@ -192,7 +199,7 @@ const haulingList = horse.haulings && horse.haulings.length > 0
         ${horse.haulings
           .sort((a, b) => new Date(b.date) - new Date(a.date))
           .map(h => {
-            const haulingDate = new Date(h.date).toLocaleDateString("es-ES");
+            const haulingDate = formatDateString(h.date);
             const vetName = h.vet_name?.name || "N/A";
             
             return `
@@ -386,7 +393,7 @@ const haulingList = horse.haulings && horse.haulings.length > 0
         date: p.passport_expedition_date,
         type: "passport",
         title: "Pasaporte Expedido",
-        details: `Fecha: ${new Date(p.passport_expedition_date).toLocaleDateString("es-ES")}`
+        details: `Fecha: ${formatDateString(p.passport_expedition_date)}`
       });
     });
   }
@@ -398,7 +405,7 @@ const haulingList = horse.haulings && horse.haulings.length > 0
         date: v.vaccine_date,
         type: "vaccine",
         title: `Vacuna: ${v.vaccine_name}`,
-        details: `Fecha: ${new Date(v.vaccine_date).toLocaleDateString("es-ES")} | Lote: ${v.batch_number} | Veterinario: ${v.vet_name?.name || "N/A"}`
+        details: `Fecha: ${formatDateString(v.vaccine_date)} | Lote: ${v.batch_number} | Veterinario: ${v.vet_name?.name || "N/A"}`
       });
     });
   }
@@ -410,7 +417,7 @@ const haulingList = horse.haulings && horse.haulings.length > 0
         date: t.test_date,
         type: "lab",
         title: `Examen: ${t.test_type}`,
-        details: `Fecha: ${new Date(t.test_date).toLocaleDateString("es-ES")} | Probado para: ${t.tested_for} | Veterinario: ${t.vet_name?.name || "N/A"}`
+        details: `Fecha: ${formatDateString(t.test_date)} | Probado para: ${t.tested_for} | Veterinario: ${t.vet_name?.name || "N/A"}`
       });
     });
   }
@@ -422,7 +429,7 @@ const haulingList = horse.haulings && horse.haulings.length > 0
         date: h.date,
         type: "hauling",
         title: `Transporte a ${h.city}, ${h.country}`,
-        details: `Fecha: ${new Date(h.date).toLocaleDateString("es-ES")} | Propósito: ${h.purpose} | Duración: ${h.duration} días | Veterinario: ${h.vet_name?.name || "N/A"}`
+        details: `Fecha: ${formatDateString(h.date)} | Propósito: ${h.purpose} | Duración: ${h.duration} días | Veterinario: ${h.vet_name?.name || "N/A"}`
       });
     });
   }
@@ -435,7 +442,7 @@ const haulingList = horse.haulings && horse.haulings.length > 0
     <div class="timeline">
       ${timelineEvents.map(event => `
         <div class="timeline-item ${event.type}">
-          <div class="timeline-date">${new Date(event.date).toLocaleDateString("es-ES")}</div>
+          <div class="timeline-date">${formatDateString(event.date)}</div>
           <div class="timeline-header">${event.title}</div>
           <div class="timeline-content">${event.details}</div>
         </div>
