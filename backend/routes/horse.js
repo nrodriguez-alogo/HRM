@@ -67,20 +67,41 @@ router.get("/", async (req, res) => {
 
 
 // POST /api/horse — save horse data (without image)
-router.post("/", upload.single("image"), async (req, res) => {
+router.post("/", upload.fields([
+  { name: "image", maxCount: 1 },
+  { name: "photo_front", maxCount: 1 },
+  { name: "photo_left", maxCount: 1 },
+  { name: "photo_right", maxCount: 1 },
+  { name: "photo_behind", maxCount: 1 }
+]), async (req, res) => {
   try {
-    console.log("req.file:", req.file);  // ← add this
-    console.log("req.body:", req.body);  // ← add this
-    const { user_id, name, date_of_birth, chip_number, fec_register, roles, country_of_birth, breeding_place, sex, color, breed, father, mother, mothers_father, head_description, lf_description, rf_description, lh_description, rh_description, body_description } = req.body;
+    const { user_id, name, date_of_birth, roles, country_of_birth, breeding_place, sex, color, breed, father, mother, mothers_father, head_description, lf_description, rf_description, lh_description, rh_description, body_description } = req.body;
 
     if (!user_id || !name) {
       return res.json({ success: false, error: "user_id and name required" });
     }
 
-    // Image path if file was uploaded
+    // Get image paths
     let imagePath = null;
-    if (req.file) {
-      imagePath = "uploads/" + req.file.filename;
+    let photoFront = null;
+    let photoLeft = null;
+    let photoRight = null;
+    let photoBehind = null;
+
+    if (req.files.image) {
+      imagePath = "uploads/" + req.files.image[0].filename;
+    }
+    if (req.files.photo_front) {
+      photoFront = "uploads/" + req.files.photo_front[0].filename;
+    }
+    if (req.files.photo_left) {
+      photoLeft = "uploads/" + req.files.photo_left[0].filename;
+    }
+    if (req.files.photo_right) {
+      photoRight = "uploads/" + req.files.photo_right[0].filename;
+    }
+    if (req.files.photo_behind) {
+      photoBehind = "uploads/" + req.files.photo_behind[0].filename;
     }
 
     const db = getDatabase();
@@ -88,9 +109,7 @@ router.post("/", upload.single("image"), async (req, res) => {
       user_id,
       name,
       date_of_birth,
-      fec_register,
-      chip_number,
-      roles: roles || [],
+      roles: Array.isArray(roles) ? roles : roles ? [roles] : [],
       country_of_birth,
       breeding_place,
       sex,
@@ -106,6 +125,10 @@ router.post("/", upload.single("image"), async (req, res) => {
       rh_description,
       body_description,
       imagePath,
+      photo_front: photoFront,
+      photo_left: photoLeft,
+      photo_right: photoRight,
+      photo_behind: photoBehind,
       createdAt: new Date()
     });
 

@@ -236,6 +236,28 @@ const haulingList = horse.haulings && horse.haulings.length > 0
   `;
   document.getElementById("horseSidebar").innerHTML = sidebarHtml;
   
+  // Build photo gallery
+    const photoGallery = `
+      <div class="photo-gallery">
+        <div class="photo-item">
+          <label>Frontal</label>
+          <img src="${horse.photo_front || 'uploads/front.webp'}" alt="Frontal">
+        </div>
+        <div class="photo-item">
+          <label>Lado Izquierdo</label>
+          <img src="${horse.photo_left || 'uploads/left.png'}" alt="Lado Izquierdo">
+        </div>
+        <div class="photo-item">
+          <label>Lado Derecho</label>
+          <img src="${horse.photo_right || 'uploads/right.png'}" alt="Lado Derecho">
+        </div>
+        <div class="photo-item">
+          <label>Trasera</label>
+          <img src="${horse.photo_behind || 'uploads/behind.jpg'}" alt="Trasera">
+        </div>
+      </div>
+    `;
+
   detail.innerHTML = `
   <article class="horse-detail">
    
@@ -329,6 +351,8 @@ const haulingList = horse.haulings && horse.haulings.length > 0
                     <span>${horse.body_description || "N/A"}</span>
                 </div>
             </div>
+            <br>
+           ${photoGallery} 
         </div>
       </section>
 
