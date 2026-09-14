@@ -16,9 +16,17 @@ async function connectDatabase() {
 
   try {
 
+    // Get MongoDB URI from environment variables
+    const mongoUrl = process.env.MONGO_URI;
+    
+    // Check if MONGO_URI is set
+    if (!mongoUrl) {
+      throw new Error("MONGO_URI environment variable is not set");
+    }
+
     // mongoClient is the variable declared above to hold the connection object
-    // New MongoClient created a new connection object, the url is where the Mongo DB is running
-    mongoClient = new MongoClient("mongodb://localhost:27017");
+    // New MongoClient created a new connection object, using the MONGO_URI from env
+    mongoClient = new MongoClient(mongoUrl);
 
     // "Wait here until the connection is made before moving on." Witht¿out this, the code moves on without connecting and could break everything
     await mongoClient.connect();
