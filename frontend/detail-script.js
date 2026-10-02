@@ -11,7 +11,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-// Find all buttons with class "record-btn"
+// Find all buttons with class "record-btn" GIT ADD
 document.querySelectorAll(".record-btn")
     // Loop through each button
     .forEach(btn => {
