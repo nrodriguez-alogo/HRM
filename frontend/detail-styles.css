@@ -811,6 +811,39 @@ header a:hover {
   padding: 20px 0;
 }
 
+/* Timeline Filters */
+.timeline-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.timeline-filters label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  user-select: none;
+}
+
+.timeline-filters input[type="checkbox"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: #1976d2;
+}
+
+.timeline-filters label:hover {
+  color: #1976d2;
+}
+
 .timeline::before {
   content: '';
   position: absolute;

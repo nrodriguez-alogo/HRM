@@ -76,304 +76,307 @@ async function loadHorseDetail() {
 
 function renderHorseDetail(horse) {
     const detail = document.getElementById("horseDetail");
-    const dateString = horse.date_of_birth.split('T')[0];  // gets "2006-12-31"
-    const formattedDate = formatDateString(dateString);  // Format date
-    const imageSrc = horse.imagePath || "uploads/placeholder.png"; // Get image
-    const age = calculateAge(horse.date_of_birth); // Calculate age
-    currentHorseId = horse._id; //Save horse id for future use
+    const dateString = horse.date_of_birth.split('T')[0];
+    const formattedDate = formatDateString(dateString);
+    const imageSrc = horse.imagePath || "uploads/placeholder.png";
+    const age = calculateAge(horse.date_of_birth);
+    currentHorseId = horse._id;
 
-    // BUILD PASSPORT LIST (add this here)
+    // BUILD PASSPORT LIST
     const passportList = horse.passport && horse.passport.length > 0
-  ? `
-    <div class="passport-cards">
-      ${horse.passport
-        .sort((a, b) => new Date(b.passport_expedition_date) - new Date(a.passport_expedition_date))
-        .map(p => {
-          const expeditionDate = new Date(p.passport_expedition_date);
-          const expirationDate = new Date(expeditionDate.getFullYear() + 1, expeditionDate.getMonth(), expeditionDate.getDate());
-          const isExpired = new Date() > expirationDate;
-          const statusIcon = isExpired ? "❌ Vencido" : "✅ Vigente";
-          const statusClass = isExpired ? "expired" : "active";
-          const formattedDate = formatDateString(p.passport_expedition_date);
-          const expirationFormatted = formatDateString(new Date(expirationDate).toISOString().split('T')[0]);
-          
-          const fileSection = p.file_path 
-            ? `
-              <div class="passport-files">
-                <a href="${p.file_path}" target="_blank" class="file-badge">
-                  <span class="file-icon">📄</span>
-                  <span class="file-name">${p.file_name}</span>
-                </a>
-              </div>
-            `
-            : `<div class="passport-files"><span class="no-file">Sin archivo adjunto</span></div>`;
-
-          return `
-            <div class="passport-card ${statusClass}">
-              <div class="passport-header">
-                <div class="passport-status ${statusClass}">${statusIcon}</div>
-                <div class="passport-dates">
-                  <div class="date-item">
-                    <span class="label">Expedido:</span>
-                    <span class="value">${formattedDate}</span>
-                  </div>
-                  <div class="date-item">
-                    <span class="label">Vence:</span>
-                    <span class="value">${expirationFormatted}</span>
-                  </div>
-                </div>
-              </div>
-              ${fileSection}
-            </div>
-          `;
-        })
-        .join("")}
-    </div>
-  `
-  : `<p class="no-records">No passports registered</p>`;
-
-    // Build vaccine table
-const vaccineList = horse.vaccines && horse.vaccines.length > 0
-  ? `
-    <div class="vaccine-cards">
-      ${horse.vaccines
-        .sort((a, b) => new Date(b.vaccine_date) - new Date(a.vaccine_date))
-        .map(v => {
-          const vaccineDate = new Date(v.vaccine_date).toLocaleDateString("es-ES");
-          const expirationDate = new Date(v.vaccine_expiration).toLocaleDateString("es-ES");
-          const vetName = v.vet_name?.name || "N/A";
-          
-          const filesHtml = v.files && v.files.length > 0
-            ? `
-              <div class="vaccine-files">
-                <strong>Archivos:</strong>
-                <div class="files-grid">
-                  ${v.files.map(f => `
-                    <a href="${f.path}" target="_blank" class="file-link">
+      ? `
+        <div class="passport-cards">
+          ${horse.passport
+            .sort((a, b) => new Date(b.passport_expedition_date) - new Date(a.passport_expedition_date))
+            .map(p => {
+              const expeditionDate = new Date(p.passport_expedition_date);
+              const expirationDate = new Date(expeditionDate.getFullYear() + 1, expeditionDate.getMonth(), expeditionDate.getDate());
+              const isExpired = new Date() > expirationDate;
+              const statusIcon = isExpired ? "❌ Vencido" : "✅ Vigente";
+              const statusClass = isExpired ? "expired" : "active";
+              const formattedDate = formatDateString(p.passport_expedition_date);
+              const expirationFormatted = formatDateString(new Date(expirationDate).toISOString().split('T')[0]);
+              
+              const fileSection = p.file_path 
+                ? `
+                  <div class="passport-files">
+                    <a href="${p.file_path}" target="_blank" class="file-badge">
                       <span class="file-icon">📄</span>
-                      <span class="file-name">${f.name}</span>
+                      <span class="file-name">${p.file_name}</span>
                     </a>
-                  `).join("")}
-                </div>
-              </div>
-            `
-            : `<div class="vaccine-files"><span class="no-files">Sin archivos</span></div>`;
+                  </div>
+                `
+                : `<div class="passport-files"><span class="no-file">Sin archivo adjunto</span></div>`;
 
-          return `
-            <div class="vaccine-card">
-              <div class="vaccine-header">
-                <h3>${v.vaccine_name}</h3>
-                <span class="vaccine-batch">${v.batch_number || "-"}</span>
-              </div>
+              return `
+                <div class="passport-card ${statusClass}">
+                  <div class="passport-header">
+                    <div class="passport-status ${statusClass}">${statusIcon}</div>
+                    <div class="passport-dates">
+                      <div class="date-item">
+                        <span class="label">Expedido:</span>
+                        <span class="value">${formattedDate}</span>
+                      </div>
+                      <div class="date-item">
+                        <span class="label">Vence:</span>
+                        <span class="value">${expirationFormatted}</span>
+                      </div>
+                    </div>
+                  </div>
+                  ${fileSection}
+                </div>
+              `;
+            })
+            .join("")}
+        </div>
+      `
+      : `<p class="no-records">No passports registered</p>`;
+
+    // BUILD VACCINE LIST
+    const vaccineList = horse.vaccines && horse.vaccines.length > 0
+      ? `
+        <div class="vaccine-cards">
+          ${horse.vaccines
+            .sort((a, b) => new Date(b.vaccine_date) - new Date(a.vaccine_date))
+            .map(v => {
+              const vaccineDate = new Date(v.vaccine_date).toLocaleDateString("es-ES");
+              const expirationDate = new Date(v.vaccine_expiration).toLocaleDateString("es-ES");
+              const vetName = v.vet_name?.name || "N/A";
               
-              <div class="vaccine-details">
-                <div class="detail-item">
-                  <span class="label">Fecha:</span>
-                  <span class="value">${vaccineDate}</span>
+              const filesHtml = v.files && v.files.length > 0
+                ? `
+                  <div class="vaccine-files">
+                    <strong>Archivos:</strong>
+                    <div class="files-grid">
+                      ${v.files.map(f => `
+                        <a href="${f.path}" target="_blank" class="file-link">
+                          <span class="file-icon">📄</span>
+                          <span class="file-name">${f.name}</span>
+                        </a>
+                      `).join("")}
+                    </div>
+                  </div>
+                `
+                : `<div class="vaccine-files"><span class="no-files">Sin archivos</span></div>`;
+
+              return `
+                <div class="vaccine-card">
+                  <div class="vaccine-header">
+                    <h3>${v.vaccine_name}</h3>
+                    <span class="vaccine-batch">${v.batch_number || "-"}</span>
+                  </div>
+                  
+                  <div class="vaccine-details">
+                    <div class="detail-item">
+                      <span class="label">Fecha:</span>
+                      <span class="value">${vaccineDate}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="label">Vence:</span>
+                      <span class="value">${expirationDate}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="label">Ruta:</span>
+                      <span class="value">${v.route || "-"}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="label">Veterinario:</span>
+                      <span class="value">${vetName}</span>
+                    </div>
+                  </div>
+                  
+                  ${filesHtml}
                 </div>
-                <div class="detail-item">
-                  <span class="label">Vence:</span>
-                  <span class="value">${expirationDate}</span>
-                </div>
-                <div class="detail-item">
-                  <span class="label">Ruta:</span>
-                  <span class="value">${v.route || "-"}</span>
-                </div>
-                <div class="detail-item">
-                  <span class="label">Veterinario:</span>
-                  <span class="value">${vetName}</span>
-                </div>
-              </div>
+              `;
+            })
+            .join("")}
+        </div>
+      `
+      : `<p class="no-records">No vaccines registered</p>`;
+
+    // BUILD LAB TEST LIST
+    const labTestList = horse.lab_tests && horse.lab_tests.length > 0
+      ? `
+        <div class="lab-test-grid">
+          ${horse.lab_tests
+            .sort((a, b) => new Date(b.test_date) - new Date(a.test_date))
+            .map(t => {
+              const testDate = formatDateString(t.test_date);
+              const vetName = t.vet_name?.name || "N/A";
               
-              ${filesHtml}
-            </div>
-          `;
-        })
-        .join("")}
-    </div>
-  `
-  : `<p class="no-records">No vaccines registered</p>`;
+              const filesHtml = t.files && t.files.length > 0
+                ? t.files.map(f => `
+                    <a href="${f.path}" target="_blank" class="lab-test-file-badge">
+                      ${f.name}
+                    </a>
+                  `).join("")
+                : `<p style="color: #999; font-size: 12px; font-style: italic;">Sin archivos</p>`;
+
+              return `
+                <div class="lab-test-card">
+                  <div class="lab-test-card-header">
+                    <h3>${t.test_type}</h3>
+                    <span class="lab-test-type-badge">${t.tested_for}</span>
+                  </div>
+                  
+                  <div class="lab-test-card-details">
+                    <div class="lab-test-detail-column">
+                      <p>
+                        <span class="lab-test-label">FECHA:</span>
+                        <span class="lab-test-value">${testDate}</span>
+                      </p>
+                      <p>
+                        <span class="lab-test-label">LABORATORIO:</span>
+                        <span class="lab-test-value">${t.official_laboratory}</span>
+                      </p>
+                    </div>
+                    <div class="lab-test-detail-column">
+                      <p>
+                        <span class="lab-test-label">RESULTADO:</span>
+                        <span class="lab-test-value">${t.test_result}</span>
+                      </p>
+                      <p>
+                        <span class="lab-test-label">VETERINARIO:</span>
+                        <span class="lab-test-value">${vetName}</span>
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div class="lab-test-card-files">
+                    <strong>Archivos:</strong>
+                    <div class="lab-test-file-badges">
+                      ${filesHtml}
+                    </div>
+                  </div>
+                </div>
+              `;
+            })
+            .join("")}
+        </div>
+      `
+      : `<p>No lab tests registered</p>`;
+
+    // BUILD HAULING LIST
+    const haulingList = horse.haulings && horse.haulings.length > 0
+      ? `
+        <table class="hauling-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Ciudad</th>
+              <th>País</th>
+              <th>Propósito</th>
+              <th>Destino</th>
+              <th>Duración (días)</th>
+              <th>Veterinario</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${horse.haulings
+              .sort((a, b) => new Date(b.date) - new Date(a.date))
+              .map(h => {
+                const haulingDate = formatDateString(h.date);
+                const vetName = h.vet_name?.name || "N/A";
                 
-  const labTestList = horse.lab_tests && horse.lab_tests.length > 0
-  ? `
-    <div class="lab-test-grid">
-      ${horse.lab_tests
-        .sort((a, b) => new Date(b.test_date) - new Date(a.test_date))
-        .map(t => {
-          const testDate = formatDateString(t.test_date);
-          const vetName = t.vet_name?.name || "N/A";
-          
-          const filesHtml = t.files && t.files.length > 0
-            ? t.files.map(f => `
-                <a href="${f.path}" target="_blank" class="lab-test-file-badge">
-                  ${f.name}
-                </a>
-              `).join("")
-            : `<p style="color: #999; font-size: 12px; font-style: italic;">Sin archivos</p>`;
+                return `
+                  <tr>
+                    <td>${haulingDate}</td>
+                    <td>${h.city}</td>
+                    <td>${h.country}</td>
+                    <td>${h.purpose}</td>
+                    <td>${h.destination}</td>
+                    <td>${h.duration}</td>
+                    <td>${vetName}</td>
+                  </tr>
+                `;
+              })
+              .join("")}
+          </tbody>
+        </table>
+      `
+      : `<p>No haulings registered</p>`;
 
-          return `
-            <div class="lab-test-card">
-              <div class="lab-test-card-header">
-                <h3>${t.test_type}</h3>
-                <span class="lab-test-type-badge">${t.tested_for}</span>
-              </div>
+    // BUILD MEDICAL PROCEDURE LIST
+    const medicalProcedureList = horse.medical_procedures && horse.medical_procedures.length > 0
+      ? `
+        <div class="procedure-grid">
+          ${horse.medical_procedures
+            .sort((a, b) => new Date(b.procedure_date) - new Date(a.procedure_date))
+            .map((proc, index) => {
+              const procDate = formatDateString(proc.procedure_date);
+              const vetName = proc.vet_name?.name || "N/A";
               
-              <div class="lab-test-card-details">
-                <div class="lab-test-detail-column">
-                  <p>
-                    <span class="lab-test-label">FECHA:</span>
-                    <span class="lab-test-value">${testDate}</span>
-                  </p>
-                  <p>
-                    <span class="lab-test-label">LABORATORIO:</span>
-                    <span class="lab-test-value">${t.official_laboratory}</span>
-                  </p>
-                </div>
-                <div class="lab-test-detail-column">
-                  <p>
-                    <span class="lab-test-label">RESULTADO:</span>
-                    <span class="lab-test-value">${t.test_result}</span>
-                  </p>
-                  <p>
-                    <span class="lab-test-label">VETERINARIO:</span>
-                    <span class="lab-test-value">${vetName}</span>
-                  </p>
-                </div>
-              </div>
-              
-              <div class="lab-test-card-files">
-                <strong>Archivos:</strong>
-                <div class="lab-test-file-badges">
-                  ${filesHtml}
-                </div>
-              </div>
-            </div>
-          `;
-        })
-        .join("")}
-    </div>
-  `
-  : `<p>No lab tests registered</p>`;
-        
-        // Build hauling table
-const haulingList = horse.haulings && horse.haulings.length > 0
-  ? `
-    <table class="hauling-table">
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Ciudad</th>
-          <th>País</th>
-          <th>Propósito</th>
-          <th>Destino</th>
-          <th>Duración (días)</th>
-          <th>Veterinario</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${horse.haulings
-          .sort((a, b) => new Date(b.date) - new Date(a.date))
-          .map(h => {
-            const haulingDate = formatDateString(h.date);
-            const vetName = h.vet_name?.name || "N/A";
-            
-            return `
-              <tr>
-                <td>${haulingDate}</td>
-                <td>${h.city}</td>
-                <td>${h.country}</td>
-                <td>${h.purpose}</td>
-                <td>${h.destination}</td>
-                <td>${h.duration}</td>
-                <td>${vetName}</td>
-              </tr>
-            `;
-          })
-          .join("")}
-      </tbody>
-    </table>
-  `
-  : `<p>No haulings registered</p>`;
+              const filesHtml = proc.files && proc.files.length > 0
+                ? proc.files.map(f => `
+                    <a href="${f.path}" target="_blank" class="procedure-file-badge">
+                      ${f.name}
+                    </a>
+                  `).join("")
+                : `<p style="color: #999; font-size: 12px; font-style: italic;">Sin archivos</p>`;
 
-  const medicalProcedureList = horse.medical_procedures && horse.medical_procedures.length > 0
-  ? `
-    <div class="procedure-grid">
-      ${horse.medical_procedures
-        .sort((a, b) => new Date(b.procedure_date) - new Date(a.procedure_date))
-        .map((proc, index) => {
-          const procDate = formatDateString(proc.procedure_date);
-          const vetName = proc.vet_name?.name || "N/A";
-          
-          const filesHtml = proc.files && proc.files.length > 0
-            ? proc.files.map(f => `
-                <a href="${f.path}" target="_blank" class="procedure-file-badge">
-                  ${f.name}
-                </a>
-              `).join("")
-            : `<p style="color: #999; font-size: 12px; font-style: italic;">Sin archivos</p>`;
+              return `
+                <div class="procedure-card">
+                  <div class="procedure-card-header">
+                    <h3>${proc.procedure_name}</h3>
+                    <span class="procedure-date-badge">${procDate}</span>
+                  </div>
+                  
+                  <div class="procedure-card-details">
+                    <div class="procedure-detail-column">
+                      <p>
+                        <span class="procedure-label">DESCRIPCIÓN:</span>
+                        <span class="procedure-value">${proc.description}</span>
+                      </p>
+                      <p>
+                        <span class="procedure-label">VETERINARIO:</span>
+                        <span class="procedure-value">${vetName}</span>
+                      </p>
+                    </div>
+                    <div class="procedure-detail-column">
+                      <p>
+                        <span class="procedure-label">CUIDADOS POSTOPERATORIOS:</span>
+                        <span class="procedure-value">${proc.aftercare}</span>
+                      </p>
+                      ${proc.recommendations ? `
+                        <p>
+                          <span class="procedure-label">RECOMENDACIONES:</span>
+                          <span class="procedure-value">${proc.recommendations}</span>
+                        </p>
+                      ` : ""}
+                    </div>
+                  </div>
+                  
+                  <div class="procedure-card-files">
+                    <strong>Archivos:</strong>
+                    <div class="procedure-file-badges">
+                      ${filesHtml}
+                    </div>
+                  </div>
+                </div>
+              `;
+            })
+            .join("")}
+        </div>
+      `
+      : `<p>No medical procedures registered</p>`;
 
-          return `
-            <div class="procedure-card">
-              <div class="procedure-card-header">
-                <h3>${proc.procedure_name}</h3>
-                <span class="procedure-date-badge">${procDate}</span>
-              </div>
-              
-              <div class="procedure-card-details">
-                <div class="procedure-detail-column">
-                  <p>
-                    <span class="procedure-label">DESCRIPCIÓN:</span>
-                    <span class="procedure-value">${proc.description}</span>
-                  </p>
-                  <p>
-                    <span class="procedure-label">VETERINARIO:</span>
-                    <span class="procedure-value">${vetName}</span>
-                  </p>
-                </div>
-                <div class="procedure-detail-column">
-                  <p>
-                    <span class="procedure-label">CUIDADOS POSTOPERATORIOS:</span>
-                    <span class="procedure-value">${proc.aftercare}</span>
-                  </p>
-                  ${proc.recommendations ? `
-                    <p>
-                      <span class="procedure-label">RECOMENDACIONES:</span>
-                      <span class="procedure-value">${proc.recommendations}</span>
-                    </p>
-                  ` : ""}
-                </div>
-              </div>
-              
-              <div class="procedure-card-files">
-                <strong>Archivos:</strong>
-                <div class="procedure-file-badges">
-                  ${filesHtml}
-                </div>
-              </div>
-            </div>
-          `;
-        })
-        .join("")}
-    </div>
-  `
-  : `<p>No medical procedures registered</p>`;
+    // BUILD SIDEBAR
+    const sidebarHtml = `
+      <div class="sidebar-image">
+        <img src="${imageSrc}" alt="${horse.name}">
+      </div>
+      <div class="sidebar-info">
+        <h2>${horse.name}</h2>
+        <p><strong>Fecha de nacimiento:</strong> ${formattedDate}</p>
+        <p><strong>Edad:</strong> ${age} años</p>
+        <a href="https://equisoft.com.co/app/zparticipacion_general.php?Tipo_busqueda=7&id=${horse.fec_register}" target="_blank">
+          Ver en equisoft
+        </a>
+      </div>
+    `;
+    document.getElementById("horseSidebar").innerHTML = sidebarHtml;
 
-  const sidebarHtml= `
-  <div class="sidebar-image">
-      <img src="${imageSrc}" alt="${horse.name}">
-    </div>
-    <div class="sidebar-info">
-      <h2>${horse.name}</h2>
-      <p><strong>Fecha de nacimiento:</strong> ${formattedDate}</p>
-      <p><strong>Edad:</strong> ${age} años</p>
-      <a href="https://equisoft.com.co/app/zparticipacion_general.php?Tipo_busqueda=7&id=${horse.fec_register}" target="_blank">
-        Ver en equisoft
-      </a>
-    </div>
-  `;
-  document.getElementById("horseSidebar").innerHTML = sidebarHtml;
-  
-  // Build photo gallery
+    // BUILD PHOTO GALLERY
     const photoGallery = `
       <div class="photo-gallery">
         <div class="photo-item">
@@ -395,235 +398,272 @@ const haulingList = horse.haulings && horse.haulings.length > 0
       </div>
     `;
 
-  detail.innerHTML = `
-  <article class="horse-detail">
-   
-    <div class="detail-info">
-      <br>
-            <!-- Información básica -->
-      <section class="accordion-section">
-        <h3 class="accordion-header">Información básica</h3>
-        <div class="accordion-content">
-            <div class="info-grid">
+    // BUILD MAIN DETAIL SECTION WITH ACCORDIONS
+    detail.innerHTML = `
+      <article class="horse-detail">
+        <div class="detail-info">
+          <br>
+          <section class="accordion-section">
+            <h3 class="accordion-header">Información básica</h3>
+            <div class="accordion-content">
+              <div class="info-grid">
                 <div class="info-item">
-                    <strong>Fecha de nacimiento:</strong>
-                    <span>${formattedDate}</span>
+                  <strong>Fecha de nacimiento:</strong>
+                  <span>${formattedDate}</span>
                 </div>
                 <div class="info-item">
-                    <strong>Edad:</strong>
-                    <span>${age} years</span>
+                  <strong>Edad:</strong>
+                  <span>${age} years</span>
                 </div>
                 <div class="info-item">
-                    <strong>Sexo:</strong>
-                    <span>${horse.sex || "N/A"}</span>
+                  <strong>Sexo:</strong>
+                  <span>${horse.sex || "N/A"}</span>
                 </div>
                 <div class="info-item">
-                    <strong>Color:</strong>
-                    <span>${horse.color || "N/A"}</span>
+                  <strong>Color:</strong>
+                  <span>${horse.color || "N/A"}</span>
                 </div>
                 <div class="info-item">
-                    <strong>Raza:</strong>
-                    <span>${horse.breed || "N/A"}</span>
+                  <strong>Raza:</strong>
+                  <span>${horse.breed || "N/A"}</span>
                 </div>
                 <div class="info-item">
-                    <strong>País de nacimiento:</strong>
-                    <span>${horse.country_of_birth || "N/A"}</span>
+                  <strong>País de nacimiento:</strong>
+                  <span>${horse.country_of_birth || "N/A"}</span>
                 </div>
                 <div class="info-item">
-                    <strong>Criadero:</strong>
-                    <span>${horse.breeding_place || "N/A"}</span>
+                  <strong>Criadero:</strong>
+                  <span>${horse.breeding_place || "N/A"}</span>
                 </div>
+              </div>
             </div>
-        </div>
-      </section>
-      
-      <!-- Pedigree -->
-      <section class="accordion-section">
-        <h3 class="accordion-header">Pedigree</h3>
-        <div class="accordion-content">
-            <div class="info-grid">
+          </section>
+          
+          <section class="accordion-section">
+            <h3 class="accordion-header">Pedigree</h3>
+            <div class="accordion-content">
+              <div class="info-grid">
                 <div class="info-item">
-                    <strong>Padre:</strong>
-                    <span>${horse.father || "N/A"}</span>
+                  <strong>Padre:</strong>
+                  <span>${horse.father || "N/A"}</span>
                 </div>
                 <div class="info-item">
-                    <strong>Madre:</strong>
-                    <span>${horse.mother || "N/A"}</span>
+                  <strong>Madre:</strong>
+                  <span>${horse.mother || "N/A"}</span>
                 </div>
                 <div class="info-item">
-                    <strong>Padre de la madre:</strong>
-                    <span>${horse.mothers_father || "N/A"}</span>
+                  <strong>Padre de la madre:</strong>
+                  <span>${horse.mothers_father || "N/A"}</span>
                 </div>
+              </div>
             </div>
-        </div>
-      </section>
-      
-      <!-- Descripción física -->
-      <section class="accordion-section">
-        <h3 class="accordion-header">Descripción física</h3>
-        <div class="accordion-content">
-            <div class="description-grid">
+          </section>
+          
+          <section class="accordion-section">
+            <h3 class="accordion-header">Descripción física</h3>
+            <div class="accordion-content">
+              <div class="description-grid">
                 <div class="info-item">
-                    <strong>Cabeza:</strong>
-                    <span>${horse.head_description || "N/A"}</span>
+                  <strong>Cabeza:</strong>
+                  <span>${horse.head_description || "N/A"}</span>
                 </div>
                 <div class="info-item">
-                    <strong>LF:</strong>
-                    <span>${horse.lf_description || "N/A"}</span>
+                  <strong>LF:</strong>
+                  <span>${horse.lf_description || "N/A"}</span>
                 </div>
                 <div class="info-item">
-                    <strong>RF:</strong>
-                    <span>${horse.rf_description || "N/A"}</span>
+                  <strong>RF:</strong>
+                  <span>${horse.rf_description || "N/A"}</span>
                 </div>
                 <div class="info-item">
-                    <strong>LH:</strong>
-                    <span>${horse.lh_description || "N/A"}</span>
+                  <strong>LH:</strong>
+                  <span>${horse.lh_description || "N/A"}</span>
                 </div>
                 <div class="info-item">
-                    <strong>RH:</strong>
-                    <span>${horse.rh_description || "N/A"}</span>
+                  <strong>RH:</strong>
+                  <span>${horse.rh_description || "N/A"}</span>
                 </div>
                 <div class="info-item">
-                    <strong>Cuerpo y torso:</strong>
-                    <span>${horse.body_description || "N/A"}</span>
+                  <strong>Cuerpo y torso:</strong>
+                  <span>${horse.body_description || "N/A"}</span>
                 </div>
+              </div>
+              <br>
+              ${photoGallery}
             </div>
-            <br>
-           ${photoGallery} 
-        </div>
-      </section>
+          </section>
 
-      <section class="accordion-section">
-      <h3 class="accordion-header">Pasaportes</h3>
-        <div class="accordion-content">
-            <div class="passport-list">
-            ${passportList}
+          <section class="accordion-section">
+            <h3 class="accordion-header">Pasaportes</h3>
+            <div class="accordion-content">
+              <div class="passport-list">
+                ${passportList}
+              </div>
             </div>
-        </div>
-      </section>
+          </section>
 
-      <section class="accordion-section">
-      <h3 class="accordion-header">Vacunas</h3>
-        <div class="accordion-content">
-            <div class="vaccine-list">
-            ${vaccineList}
+          <section class="accordion-section">
+            <h3 class="accordion-header">Vacunas</h3>
+            <div class="accordion-content">
+              <div class="vaccine-list">
+                ${vaccineList}
+              </div>
             </div>
-        </div>
-      </section>
+          </section>
 
-      <section class="accordion-section">
-      <h3 class="accordion-header">Examenes de Laboratorio</h3>
-        <div class="accordion-content">
-            <div class="lab-test-list">
+          <section class="accordion-section">
+            <h3 class="accordion-header">Examenes de Laboratorio</h3>
+            <div class="accordion-content">
+              <div class="lab-test-list">
                 ${labTestList}
+              </div>
             </div>
-        </div>
-      </section>
-      
-      <section class="accordion-section">
-      <h3 class="accordion-header">Procedimientos Médicos</h3>
-        <div class="accordion-content">
-            <div class="procedure-list">
+          </section>
+          
+          <section class="accordion-section">
+            <h3 class="accordion-header">Procedimientos Médicos</h3>
+            <div class="accordion-content">
+              <div class="procedure-list">
                 ${medicalProcedureList}
+              </div>
             </div>
-        </div>
-      </section>
+          </section>
 
-      <section class="accordion-section">
-      <h3 class="accordion-header">Traslados</h3>
-        <div class="accordion-content">
-            <div class="hauling-list">
+          <section class="accordion-section">
+            <h3 class="accordion-header">Traslados</h3>
+            <div class="accordion-content">
+              <div class="hauling-list">
                 ${haulingList}
+              </div>
             </div>
+          </section>
         </div>
-      </section>
+      </article>
+    `;
 
-    </div>
-  </article>
-`;
-
-    // Add accordion toggle handlers
+    // ADD ACCORDION TOGGLE HANDLERS
     document.querySelectorAll(".accordion-header").forEach(header => {
-    header.addEventListener("click", () => {
+      header.addEventListener("click", () => {
         const content = header.nextElementSibling;
         const section = header.parentElement;
         
         section.classList.toggle("active");
         content.style.display = section.classList.contains("active") ? "block" : "none";
-    });
+      });
     });
 
-          // BUILD TIMELINE
-  const timelineEvents = [];
-  
-  // Add passports
-  if (horse.passport && horse.passport.length > 0) {
-    horse.passport.forEach(p => {
-      timelineEvents.push({
-        date: p.passport_expedition_date,
-        type: "passport",
-        title: "Pasaporte Expedido",
-        details: `Fecha: ${formatDateString(p.passport_expedition_date)}`
+    // ====================================================
+    // BUILD TIMELINE - This is the key section
+    // ====================================================
+    const timelineEvents = [];
+    
+    // Add passports
+    if (horse.passport && horse.passport.length > 0) {
+      horse.passport.forEach(p => {
+        timelineEvents.push({
+          date: p.passport_expedition_date,
+          type: "passport",
+          title: "Pasaporte Expedido",
+          details: `Fecha: ${formatDateString(p.passport_expedition_date)}`
+        });
+      });
+    }
+    
+    // Add vaccines
+    if (horse.vaccines && horse.vaccines.length > 0) {
+      horse.vaccines.forEach(v => {
+        timelineEvents.push({
+          date: v.vaccine_date,
+          type: "vaccine",
+          title: `Vacuna: ${v.vaccine_name}`,
+          details: `Fecha: ${formatDateString(v.vaccine_date)} | Lote: ${v.batch_number} | Veterinario: ${v.vet_name?.name || "N/A"}`
+        });
+      });
+    }
+    
+    // Add lab tests
+    if (horse.lab_tests && horse.lab_tests.length > 0) {
+      horse.lab_tests.forEach(t => {
+        timelineEvents.push({
+          date: t.test_date,
+          type: "lab",
+          title: `Examen: ${t.test_type}`,
+          details: `Fecha: ${formatDateString(t.test_date)} | Probado para: ${t.tested_for} | Veterinario: ${t.vet_name?.name || "N/A"}`
+        });
+      });
+    }
+    
+    // Add haulings
+    if (horse.haulings && horse.haulings.length > 0) {
+      horse.haulings.forEach(h => {
+        timelineEvents.push({
+          date: h.date,
+          type: "hauling",
+          title: `Transporte a ${h.city}, ${h.country}`,
+          details: `Fecha: ${formatDateString(h.date)} | Propósito: ${h.purpose} | Duración: ${h.duration} días | Veterinario: ${h.vet_name?.name || "N/A"}`
+        });
+      });
+    }
+
+    // Add medical procedures
+    if (horse.medical_procedures && horse.medical_procedures.length > 0) {
+      horse.medical_procedures.forEach(proc => {
+        timelineEvents.push({
+          date: proc.procedure_date,
+          type: "procedure",
+          title: `Procedimiento: ${proc.procedure_name}`,
+          details: `Fecha: ${formatDateString(proc.procedure_date)} | Veterinario: ${proc.vet_name?.name || "N/A"}`
+        });
+      });
+    }
+
+    // Sort by date (newest first)
+    timelineEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    // Build timeline filters
+    const filterHtml = `
+      <div class="timeline-filters">
+        <label><input type="checkbox" class="timeline-filter" data-type="passport" checked> Pasaportes</label>
+        <label><input type="checkbox" class="timeline-filter" data-type="vaccine" checked> Vacunas</label>
+        <label><input type="checkbox" class="timeline-filter" data-type="lab" checked> Exámenes de Laboratorio</label>
+        <label><input type="checkbox" class="timeline-filter" data-type="hauling" checked> Traslados</label>
+        <label><input type="checkbox" class="timeline-filter" data-type="procedure" checked> Procedimientos Médicos</label>
+      </div>
+    `;
+
+    // Build timeline HTML with filters
+    const timelineHtml = `
+      ${filterHtml}
+      <div class="timeline" id="timelineContainer">
+        ${timelineEvents.map(event => `
+          <div class="timeline-item" data-type="${event.type}">
+            <div class="timeline-date">${formatDateString(event.date)}</div>
+            <div class="timeline-header">${event.title}</div>
+            <div class="timeline-content">${event.details}</div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+    
+    // Set the timeline HTML to DOM FIRST
+    document.getElementById("horseTimeline").innerHTML = timelineEvents.length > 0 
+      ? timelineHtml 
+      : `<p>No events registered for this horse</p>`;
+
+    // THEN add filter event listeners AFTER rendering
+    document.querySelectorAll(".timeline-filter").forEach(checkbox => {
+      checkbox.addEventListener("change", () => {
+        const selectedTypes = Array.from(document.querySelectorAll(".timeline-filter:checked"))
+          .map(cb => cb.dataset.type);
+        
+        document.querySelectorAll(".timeline-item").forEach(item => {
+          const itemType = item.dataset.type;
+          item.style.display = selectedTypes.includes(itemType) ? "block" : "none";
+        });
       });
     });
-  }
-  
-  // Add vaccines
-  if (horse.vaccines && horse.vaccines.length > 0) {
-    horse.vaccines.forEach(v => {
-      timelineEvents.push({
-        date: v.vaccine_date,
-        type: "vaccine",
-        title: `Vacuna: ${v.vaccine_name}`,
-        details: `Fecha: ${formatDateString(v.vaccine_date)} | Lote: ${v.batch_number} | Veterinario: ${v.vet_name?.name || "N/A"}`
-      });
-    });
-  }
-  
-  // Add lab tests
-  if (horse.lab_tests && horse.lab_tests.length > 0) {
-    horse.lab_tests.forEach(t => {
-      timelineEvents.push({
-        date: t.test_date,
-        type: "lab",
-        title: `Examen: ${t.test_type}`,
-        details: `Fecha: ${formatDateString(t.test_date)} | Probado para: ${t.tested_for} | Veterinario: ${t.vet_name?.name || "N/A"}`
-      });
-    });
-  }
-  
-  // Add haulings
-  if (horse.haulings && horse.haulings.length > 0) {
-    horse.haulings.forEach(h => {
-      timelineEvents.push({
-        date: h.date,
-        type: "hauling",
-        title: `Transporte a ${h.city}, ${h.country}`,
-        details: `Fecha: ${formatDateString(h.date)} | Propósito: ${h.purpose} | Duración: ${h.duration} días | Veterinario: ${h.vet_name?.name || "N/A"}`
-      });
-    });
-  }
-  
-  // Sort by date (newest first)
-  timelineEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
-  
-  // Build timeline HTML
-  const timelineHtml = `
-    <div class="timeline">
-      ${timelineEvents.map(event => `
-        <div class="timeline-item ${event.type}">
-          <div class="timeline-date">${formatDateString(event.date)}</div>
-          <div class="timeline-header">${event.title}</div>
-          <div class="timeline-content">${event.details}</div>
-        </div>
-      `).join("")}
-    </div>
-  `;
-  
-  document.getElementById("horseTimeline").innerHTML = timelineEvents.length > 0 
-    ? timelineHtml 
-    : `<p>No events registered for this horse</p>`;
 }
+
 
 
 
