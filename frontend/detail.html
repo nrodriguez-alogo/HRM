@@ -114,12 +114,65 @@
       </div>
 
       <div class="horse-input">
-        <label for="vaccineFiles">Archivos (Certificado, Comprobante, etc.) - Máx 5</label>
-        <input type="file" id="vaccineFiles" name="vaccine_file" accept="image/*,.pdf" multiple>
+      <label for="vaccineFiles">Archivos (Certificado, Comprobante, etc.) - Máx 5</label>
+      <input type="file" id="vaccineFiles" name="vaccine_file" accept="image/*,.pdf" multiple>
+      <small>Puedes subir múltiples archivos (imágenes o PDFs)</small>
+      
+      <!-- Add this: Preview of selected files -->
+      <div id="filePreview" class="file-preview"></div>
+    </div>
+
+      <button type="submit">Guardar</button>
+    </form>
+  </div>
+</div>
+
+<!-- Lab Test Modal -->
+<div id="labTestModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Registro Examen Laboratorio</h2>
+    
+    <form id="labTestForm">
+      <div class="horse-input">
+        <label for="testDate">Fecha de Prueba *</label>
+        <input type="date" id="testDate" name="test_date" required>
+      </div>
+
+      <div class="horse-input">
+        <label for="testedFor">Probado Para *</label>
+        <input type="text" id="testedFor" name="tested_for" placeholder="Ej: Anemia, Infección" required>
+      </div>
+
+      <div class="horse-input">
+        <label for="testType">Tipo de Prueba *</label>
+        <input type="text" id="testType" name="test_type" placeholder="Ej: Análisis de sangre" required>
+      </div>
+
+      <div class="horse-input">
+        <label for="testResult">Resultado *</label>
+        <textarea id="testResult" name="test_result" rows="3" required></textarea>
+      </div>
+
+      <div class="horse-input">
+        <label for="laboratory">Laboratorio Oficial *</label>
+        <input type="text" id="laboratory" name="official_laboratory" required>
+      </div>
+
+      <div class="horse-input">
+        <label for="labVeterinarian">Veterinario *</label>
+        <select id="labVeterinarian" name="veterinarian_id" required>
+          <option value="">Seleccionar veterinario</option>
+        </select>
+      </div>
+
+      <div class="horse-input">
+        <label for="labTestFiles">Archivos (Resultados, Certificados, etc.) - Máx 5</label>
+        <input type="file" id="labTestFiles" name="lab_test_file" accept="image/*,.pdf" multiple>
         <small>Puedes subir múltiples archivos (imágenes o PDFs)</small>
         
-        <!-- Add this: Preview of selected files -->
-        <div id="filePreview" class="file-preview"></div>
+        <!-- File preview -->
+        <div id="labTestFilePreview" class="file-preview"></div>
       </div>
 
       <button type="submit">Guardar</button>
@@ -127,49 +180,6 @@
   </div>
 </div>
 
-  <!-- Lab Test Modal -->
-  <div id="labTestModal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Registro Examen Laboratorio</h2>
-      
-      <form id="labTestForm">
-        <div class="horse-input">
-          <label for="testDate">Fecha de Prueba *</label>
-          <input type="date" id="testDate" name="test_date" required>
-        </div>
-
-        <div class="horse-input">
-          <label for="testedFor">Probado Para *</label>
-          <input type="text" id="testedFor" name="tested_for" placeholder="Ej: Anemia, Infección" required>
-        </div>
-
-        <div class="horse-input">
-          <label for="testType">Tipo de Prueba *</label>
-          <input type="text" id="testType" name="test_type" placeholder="Ej: Análisis de sangre" required>
-        </div>
-
-        <div class="horse-input">
-          <label for="testResult">Resultado *</label>
-          <textarea id="testResult" name="test_result" rows="3" required></textarea>
-        </div>
-
-        <div class="horse-input">
-          <label for="laboratory">Laboratorio Oficial *</label>
-          <input type="text" id="laboratory" name="official_laboratory" required>
-        </div>
-
-        <div class="horse-input">
-          <label for="labVeterinarian">Veterinario *</label>
-          <select id="labVeterinarian" name="veterinarian_id" required>
-            <option value="">Seleccionar veterinario</option>
-          </select>
-        </div>
-
-        <button type="submit">Guardar</button>
-      </form>
-    </div>
-  </div>
   <!-- Hauling Modal -->
   <div id="haulingModal" class="modal">
     <div class="modal-content">

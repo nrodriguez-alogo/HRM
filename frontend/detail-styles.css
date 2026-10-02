@@ -612,41 +612,121 @@ header a:hover {
   }
 }
 
-.lab-test-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
+/* Lab Test Grid */
+.lab-test-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
-.lab-test-table thead {
-  background-color: #f0f0f0;
-  border-bottom: 2px solid #ddd;
+.lab-test-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  transition: box-shadow 0.2s;
 }
 
-.lab-test-table th {
-  padding: 12px;
-  text-align: left;
+.lab-test-card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+}
+
+.lab-test-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.lab-test-card-header h3 {
+  margin: 0;
+  font-size: 16px;
   font-weight: 600;
-  color: #2c3e50;
+  color: #1976d2;
 }
 
-.lab-test-table tbody tr {
-  border-bottom: 1px solid #ddd;
+.lab-test-type-badge {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
-.lab-test-table tbody tr:hover {
-  background-color: #f9fafb;
+.lab-test-card-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
 }
 
-.lab-test-table td {
-  padding: 12px;
-  color: #555;
+.lab-test-detail-column p {
+  margin: 6px 0;
+  line-height: 1.4;
 }
 
-.lab-test-table td:first-child {
+.lab-test-label {
+  font-weight: 600;
+  color: #999;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  display: block;
+}
+
+.lab-test-value {
+  color: #333;
   font-weight: 500;
-  color: #2c3e50;
+  display: block;
 }
+
+.lab-test-card-files {
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.lab-test-card-files strong {
+  display: block;
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.lab-test-file-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lab-test-file-badge {
+  display: inline-block;
+  background: #e8f4f8;
+  color: #1976d2;
+  padding: 6px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #b3e5fc;
+  transition: all 0.2s;
+}
+
+.lab-test-file-badge:hover {
+  background: #b3e5fc;
+  border-color: #1976d2;
+  color: #0d47a1;
+}
+
 .hauling-table {
   width: 100%;
   border-collapse: collapse;

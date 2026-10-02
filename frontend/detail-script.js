@@ -194,43 +194,66 @@ const vaccineList = horse.vaccines && horse.vaccines.length > 0
   `
   : `<p class="no-records">No vaccines registered</p>`;
                 
-        // Build lab test table
-        const labTestList = horse.lab_tests && horse.lab_tests.length > 0
-        ? `
-            <table class="lab-test-table">
-            <thead>
-                <tr>
-                <th>Fecha</th>
-                <th>Probado Para</th>
-                <th>Tipo de Prueba</th>
-                <th>Resultado</th>
-                <th>Laboratorio</th>
-                <th>Veterinario</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${horse.lab_tests
-                .sort((a, b) => new Date(b.test_date) - new Date(a.test_date))
-                .map(t => {
-                    const testDate = formatDateString(t.test_date);
-                    const vetName = t.vet_name?.name || "N/A";
-                    
-                    return `
-                    <tr>
-                        <td>${testDate}</td>
-                        <td>${t.tested_for}</td>
-                        <td>${t.test_type}</td>
-                        <td>${t.test_result}</td>
-                        <td>${t.official_laboratory}</td>
-                        <td>${vetName}</td>
-                    </tr>
-                    `;
-                })
-                .join("")}
-            </tbody>
-            </table>
-        `
-        : `<p>No lab tests registered</p>`;
+  const labTestList = horse.lab_tests && horse.lab_tests.length > 0
+  ? `
+    <div class="lab-test-grid">
+      ${horse.lab_tests
+        .sort((a, b) => new Date(b.test_date) - new Date(a.test_date))
+        .map(t => {
+          const testDate = formatDateString(t.test_date);
+          const vetName = t.vet_name?.name || "N/A";
+          
+          const filesHtml = t.files && t.files.length > 0
+            ? t.files.map(f => `
+                <a href="${f.path}" target="_blank" class="lab-test-file-badge">
+                  ${f.name}
+                </a>
+              `).join("")
+            : `<p style="color: #999; font-size: 12px; font-style: italic;">Sin archivos</p>`;
+
+          return `
+            <div class="lab-test-card">
+              <div class="lab-test-card-header">
+                <h3>${t.test_type}</h3>
+                <span class="lab-test-type-badge">${t.tested_for}</span>
+              </div>
+              
+              <div class="lab-test-card-details">
+                <div class="lab-test-detail-column">
+                  <p>
+                    <span class="lab-test-label">FECHA:</span>
+                    <span class="lab-test-value">${testDate}</span>
+                  </p>
+                  <p>
+                    <span class="lab-test-label">LABORATORIO:</span>
+                    <span class="lab-test-value">${t.official_laboratory}</span>
+                  </p>
+                </div>
+                <div class="lab-test-detail-column">
+                  <p>
+                    <span class="lab-test-label">RESULTADO:</span>
+                    <span class="lab-test-value">${t.test_result}</span>
+                  </p>
+                  <p>
+                    <span class="lab-test-label">VETERINARIO:</span>
+                    <span class="lab-test-value">${vetName}</span>
+                  </p>
+                </div>
+              </div>
+              
+              <div class="lab-test-card-files">
+                <strong>Archivos:</strong>
+                <div class="lab-test-file-badges">
+                  ${filesHtml}
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join("")}
+    </div>
+  `
+  : `<p>No lab tests registered</p>`;
         
         // Build hauling table
 const haulingList = horse.haulings && horse.haulings.length > 0
@@ -762,10 +785,14 @@ vaccineForm.addEventListener("submit", async (e) => {
   }
 });
 
-//Modal window lab tests
+
+// Lab Test Modal
 const labTestModal = document.getElementById("labTestModal");
 const labTestForm = document.getElementById("labTestForm");
 const closeLabTestBtn = labTestModal.querySelector(".close");
+
+// Keep array of accumulated files for lab tests
+let labTestFiles = [];
 
 // Close modal
 closeLabTestBtn.addEventListener("click", () => {
@@ -779,7 +806,7 @@ window.addEventListener("click", (event) => {
   }
 });
 
-// Load vets in lab test dropdown
+// Load vets for lab tests
 async function loadLabVeterinarians() {
   try {
     const response = await fetch(`/api/veterinarian`);
@@ -802,51 +829,106 @@ document.querySelectorAll(".record-btn").forEach(btn => {
   btn.addEventListener("click", (e) => {
     const recordType = e.target.dataset.record;
     
-    if (recordType === "passport") {
-      passportModal.classList.add("active");
-    } else if (recordType === "vaccines") {
-      loadVeterinarians();
-      vaccineModal.classList.add("active");
-    } else if (recordType === "medical") {
+    if (recordType === "medical") {
       loadLabVeterinarians();
       labTestModal.classList.add("active");
     }
   });
 });
 
+// Update file preview for lab tests
+function updateLabTestFilePreview() {
+  const preview = document.getElementById("labTestFilePreview");
+  preview.innerHTML = "";
+  
+  if (labTestFiles.length > 0) {
+    preview.innerHTML = `<strong>Archivos seleccionados (${labTestFiles.length}):</strong>`;
+    
+    const list = document.createElement("ul");
+    list.className = "file-list";
+    
+    labTestFiles.forEach((file, index) => {
+      const item = document.createElement("li");
+      item.style.display = "flex";
+      item.style.justifyContent = "space-between";
+      item.style.alignItems = "center";
+      
+      const name = document.createElement("span");
+      name.textContent = file.name;
+      
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.textContent = "✕";
+      removeBtn.style.background = "none";
+      removeBtn.style.border = "none";
+      removeBtn.style.color = "#d32f2f";
+      removeBtn.style.cursor = "pointer";
+      removeBtn.style.fontSize = "16px";
+      removeBtn.addEventListener("click", () => {
+        labTestFiles.splice(index, 1);
+        updateLabTestFilePreview();
+      });
+      
+      item.appendChild(name);
+      item.appendChild(removeBtn);
+      list.appendChild(item);
+    });
+    
+    preview.appendChild(list);
+  }
+}
+
+// Lab test file preview listener - Accumulate files
+const labTestFileInput = document.getElementById("labTestFiles");
+labTestFileInput.addEventListener("change", () => {
+  if (labTestFileInput.files.length > 0) {
+    for (let file of labTestFileInput.files) {
+      labTestFiles.push(file);
+    }
+  }
+  
+  labTestFileInput.value = "";
+  updateLabTestFilePreview();
+});
+
 // Handle lab test form submission
 labTestForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   
-  const labTestData = {
-    horse_id: currentHorseId,
-    user_id: localStorage.getItem("uid"),
-    test_date: document.getElementById("testDate").value,
-    tested_for: document.getElementById("testedFor").value,
-    test_type: document.getElementById("testType").value,
-    test_result: document.getElementById("testResult").value,
-    official_laboratory: document.getElementById("laboratory").value,
-    veterinarian_id: document.getElementById("labVeterinarian").value
-  };
+  const formData = new FormData();
+  formData.append("horse_id", currentHorseId);
+  formData.append("user_id", localStorage.getItem("uid"));
+  formData.append("test_date", document.getElementById("testDate").value);
+  formData.append("tested_for", document.getElementById("testedFor").value);
+  formData.append("test_type", document.getElementById("testType").value);
+  formData.append("test_result", document.getElementById("testResult").value);
+  formData.append("official_laboratory", document.getElementById("laboratory").value);
+  formData.append("veterinarian_id", document.getElementById("labVeterinarian").value);
+  
+  // Add all accumulated files
+  for (let file of labTestFiles) {
+    formData.append("lab_test_file", file);
+  }
 
   try {
     const response = await fetch("/api/lab-test", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(labTestData)
+      body: formData
     });
 
     const result = await response.json();
 
     if (result.success) {
-      console.log("Lab test saved");
       labTestModal.classList.remove("active");
       labTestForm.reset();
+      labTestFiles = [];
+      updateLabTestFilePreview();
+      loadHorseDetail();
     } else {
-      console.error("Error:", result.error);
+      alert("Error: " + result.error);
     }
   } catch (error) {
-    console.error("Fetch error:", error);
+    console.error("Error:", error);
   }
 });
 
