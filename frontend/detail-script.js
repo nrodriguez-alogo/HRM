@@ -295,6 +295,68 @@ const haulingList = horse.haulings && horse.haulings.length > 0
   `
   : `<p>No haulings registered</p>`;
 
+  const medicalProcedureList = horse.medical_procedures && horse.medical_procedures.length > 0
+  ? `
+    <div class="procedure-grid">
+      ${horse.medical_procedures
+        .sort((a, b) => new Date(b.procedure_date) - new Date(a.procedure_date))
+        .map((proc, index) => {
+          const procDate = formatDateString(proc.procedure_date);
+          const vetName = proc.vet_name?.name || "N/A";
+          
+          const filesHtml = proc.files && proc.files.length > 0
+            ? proc.files.map(f => `
+                <a href="${f.path}" target="_blank" class="procedure-file-badge">
+                  ${f.name}
+                </a>
+              `).join("")
+            : `<p style="color: #999; font-size: 12px; font-style: italic;">Sin archivos</p>`;
+
+          return `
+            <div class="procedure-card">
+              <div class="procedure-card-header">
+                <h3>${proc.procedure_name}</h3>
+                <span class="procedure-date-badge">${procDate}</span>
+              </div>
+              
+              <div class="procedure-card-details">
+                <div class="procedure-detail-column">
+                  <p>
+                    <span class="procedure-label">DESCRIPCIÓN:</span>
+                    <span class="procedure-value">${proc.description}</span>
+                  </p>
+                  <p>
+                    <span class="procedure-label">VETERINARIO:</span>
+                    <span class="procedure-value">${vetName}</span>
+                  </p>
+                </div>
+                <div class="procedure-detail-column">
+                  <p>
+                    <span class="procedure-label">CUIDADOS POSTOPERATORIOS:</span>
+                    <span class="procedure-value">${proc.aftercare}</span>
+                  </p>
+                  ${proc.recommendations ? `
+                    <p>
+                      <span class="procedure-label">RECOMENDACIONES:</span>
+                      <span class="procedure-value">${proc.recommendations}</span>
+                    </p>
+                  ` : ""}
+                </div>
+              </div>
+              
+              <div class="procedure-card-files">
+                <strong>Archivos:</strong>
+                <div class="procedure-file-badges">
+                  ${filesHtml}
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join("")}
+    </div>
+  `
+  : `<p>No medical procedures registered</p>`;
 
   const sidebarHtml= `
   <div class="sidebar-image">
@@ -454,6 +516,15 @@ const haulingList = horse.haulings && horse.haulings.length > 0
         <div class="accordion-content">
             <div class="lab-test-list">
                 ${labTestList}
+            </div>
+        </div>
+      </section>
+      
+      <section class="accordion-section">
+      <h3 class="accordion-header">Procedimientos Médicos</h3>
+        <div class="accordion-content">
+            <div class="procedure-list">
+                ${medicalProcedureList}
             </div>
         </div>
       </section>
@@ -1022,6 +1093,155 @@ haulingForm.addEventListener("submit", async (e) => {
     }
   } catch (error) {
     console.error("Fetch error:", error);
+  }
+});
+
+// Medical Procedure Modal
+const procedureModal = document.getElementById("procedureModal");
+const procedureForm = document.getElementById("procedureForm");
+const closeProcedureBtn = procedureModal.querySelector(".close");
+
+// Keep array of accumulated files for procedures
+let procedureFiles = [];
+
+// Close modal
+closeProcedureBtn.addEventListener("click", () => {
+  procedureModal.classList.remove("active");
+});
+
+// Click outside to close
+window.addEventListener("click", (event) => {
+  if (event.target === procedureModal) {
+    procedureModal.classList.remove("active");
+  }
+});
+
+// Load vets for procedures
+async function loadProcedureVeterinarians() {
+  try {
+    const response = await fetch(`/api/veterinarian`);
+    const vets = await response.json();
+    
+    const select = document.getElementById("procedureVeterinarian");
+    select.innerHTML = '<option value="">Seleccionar veterinario</option>';
+    vets.forEach(vet => {
+      const option = document.createElement("option");
+      option.value = vet._id;
+      option.textContent = vet.name;
+      select.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Error loading vets:", error);
+  }
+}
+
+// Handle procedure button click
+document.querySelectorAll(".record-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    const recordType = e.target.dataset.record;
+    
+    if (recordType === "procedure") {
+      procedureFiles = [];
+      updateProcedureFilePreview();
+      loadProcedureVeterinarians();
+      procedureModal.classList.add("active");
+    }
+  });
+});
+
+// Update file preview for procedures
+function updateProcedureFilePreview() {
+  const preview = document.getElementById("procedureFilePreview");
+  preview.innerHTML = "";
+  
+  if (procedureFiles.length > 0) {
+    preview.innerHTML = `<strong>Archivos seleccionados (${procedureFiles.length}):</strong>`;
+    
+    const list = document.createElement("ul");
+    list.className = "file-list";
+    
+    procedureFiles.forEach((file, index) => {
+      const item = document.createElement("li");
+      item.style.display = "flex";
+      item.style.justifyContent = "space-between";
+      item.style.alignItems = "center";
+      
+      const name = document.createElement("span");
+      name.textContent = file.name;
+      
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.textContent = "✕";
+      removeBtn.style.background = "none";
+      removeBtn.style.border = "none";
+      removeBtn.style.color = "#d32f2f";
+      removeBtn.style.cursor = "pointer";
+      removeBtn.style.fontSize = "16px";
+      removeBtn.addEventListener("click", () => {
+        procedureFiles.splice(index, 1);
+        updateProcedureFilePreview();
+      });
+      
+      item.appendChild(name);
+      item.appendChild(removeBtn);
+      list.appendChild(item);
+    });
+    
+    preview.appendChild(list);
+  }
+}
+
+// Procedure file preview listener - Accumulate files
+const procedureFileInput = document.getElementById("procedureFiles");
+procedureFileInput.addEventListener("change", () => {
+  if (procedureFileInput.files.length > 0) {
+    for (let file of procedureFileInput.files) {
+      procedureFiles.push(file);
+    }
+  }
+  
+  procedureFileInput.value = "";
+  updateProcedureFilePreview();
+});
+
+// Handle procedure form submission
+procedureForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  const formData = new FormData();
+  formData.append("horse_id", currentHorseId);
+  formData.append("user_id", localStorage.getItem("uid"));
+  formData.append("procedure_date", document.getElementById("procedureDate").value);
+  formData.append("procedure_name", document.getElementById("procedureName").value);
+  formData.append("description", document.getElementById("procedureDescription").value);
+  formData.append("veterinarian_id", document.getElementById("procedureVeterinarian").value);
+  formData.append("aftercare", document.getElementById("aftercare").value);
+  formData.append("recommendations", document.getElementById("recommendations").value);
+  
+  // Add all accumulated files
+  for (let file of procedureFiles) {
+    formData.append("procedure_file", file);
+  }
+
+  try {
+    const response = await fetch("/api/medical-procedure", {
+      method: "POST",
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      procedureModal.classList.remove("active");
+      procedureForm.reset();
+      procedureFiles = [];
+      updateProcedureFilePreview();
+      loadHorseDetail();
+    } else {
+      alert("Error: " + result.error);
+    }
+  } catch (error) {
+    console.error("Error:", error);
   }
 });
 

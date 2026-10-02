@@ -37,6 +37,7 @@
             <button class="record-btn" data-record="vaccines">Registro Vacunas</button>
             <button class="record-btn" data-record="medical">Registro Examen de Laboratorio</button>
             <button class="record-btn" data-record="hauling">Registro Traslado</button>
+            <button class="record-btn" data-record="procedure">Registrar Procedimiento Médico</button>
             </div>
             <div id="horseDetail"></div>
           </div>
@@ -228,6 +229,60 @@
       </form>
     </div>
   </div>
+
+  <!-- Medical Procedure Modal -->
+<div id="procedureModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Registrar Procedimiento Médico</h2>
+    
+    <form id="procedureForm">
+      <div class="horse-input">
+        <label for="procedureDate">Fecha del Procedimiento *</label>
+        <input type="date" id="procedureDate" name="procedure_date" required>
+      </div>
+
+      <div class="horse-input">
+        <label for="procedureName">Nombre del Procedimiento *</label>
+        <input type="text" id="procedureName" name="procedure_name" placeholder="Ej: Castración, Cirugía de cólicos" required>
+      </div>
+
+      <div class="horse-input">
+        <label for="procedureDescription">Descripción/Detalles *</label>
+        <textarea id="procedureDescription" name="description" rows="4" placeholder="Detalles del procedimiento realizado" required></textarea>
+      </div>
+
+      <div class="horse-input">
+        <label for="procedureVeterinarian">Veterinario *</label>
+        <select id="procedureVeterinarian" name="veterinarian_id" required>
+          <option value="">Seleccionar veterinario</option>
+        </select>
+      </div>
+
+      <div class="horse-input">
+        <label for="aftercare">Cuidados Postoperatorios *</label>
+        <textarea id="aftercare" name="aftercare" rows="3" placeholder="Instrucciones de cuidado después del procedimiento" required></textarea>
+      </div>
+
+      <div class="horse-input">
+        <label for="recommendations">Recomendaciones Adicionales</label>
+        <textarea id="recommendations" name="recommendations" rows="3" placeholder="Recomendaciones adicionales o seguimiento"></textarea>
+      </div>
+
+      <div class="horse-input">
+        <label for="procedureFiles">Archivos (Fotos, Reportes, etc.) - Máx 5</label>
+        <input type="file" id="procedureFiles" name="procedure_file" accept="image/*,.pdf" multiple>
+        <small>Puedes subir múltiples archivos (imágenes o PDFs)</small>
+        
+        <!-- File preview -->
+        <div id="procedureFilePreview" class="file-preview"></div>
+      </div>
+
+      <button type="submit">Guardar</button>
+    </form>
+  </div>
+</div>
+
     <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>

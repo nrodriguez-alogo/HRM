@@ -298,7 +298,52 @@ router.get("/:id", async (req, res) => {
           }
         }
       },
-      { $project: { vets: 0, lab_vets: 0, hauling_vets: 0 } }
+      {
+  $lookup: {
+    from: "medical_procedures",
+    localField: "_id",
+    foreignField: "horse_id",
+    as: "medical_procedures"
+  }
+},
+{
+  $lookup: {
+    from: "veterinarians",
+    localField: "medical_procedures.veterinarian_id",
+    foreignField: "_id",
+    as: "procedure_vets"
+  }
+},
+{
+  $addFields: {
+    medical_procedures: {
+      $map: {
+        input: "$medical_procedures",
+        as: "procedure",
+        in: {
+          $mergeObjects: [
+            "$$procedure",
+            {
+              vet_name: {
+                $arrayElemAt: [
+                  {
+                    $filter: {
+                      input: "$procedure_vets",
+                      as: "vet",
+                      cond: { $eq: ["$$vet._id", "$$procedure.veterinarian_id"] }
+                    }
+                  },
+                  0
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+},
+      { $project: { vets: 0, lab_vets: 0, hauling_vets: 0, procedure_vets: 0  } }
     ]).toArray();
 
     if (!horse || horse.length === 0) {

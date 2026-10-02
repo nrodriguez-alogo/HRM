@@ -39,6 +39,10 @@ app.use("/api/lab-test", labTestRoutes);
 const haulingRoutes = require("./routes/hauling.js");
 app.use("/api/hauling", haulingRoutes);
 
+//Medical procedures database
+const medicalProcedureRoutes = require("./routes/medical-procedure.js");
+app.use("/api/medical-procedure", medicalProcedureRoutes);
+
 // Serve frontend files
 app.use(express.static(path.join(__dirname, "../frontend")));
 
