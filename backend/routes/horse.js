@@ -12,21 +12,21 @@ const Horse = require("../models/Horse.js");
 
 //Image handling
 const multer = require("multer");
-const path = require("path");
 
-// Configure multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/uploads/");
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + path.extname(file.originalname);
-    cb(null, uniqueName);
+// Configure multer for memory storage (S3 will handle the files)
+const storage = multer.memoryStorage();
+
+const upload = multer({ 
+  storage,
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
   }
 });
-
-const upload = multer({ storage });
-
 
 
 router.get("/", async (req, res) => {
@@ -41,7 +41,7 @@ router.get("/", async (req, res) => {
 });
 
 
-// POST /api/horse — save horse data (without image)
+// POST /api/horse — save horse data with S3 image uploads
 router.post("/", upload.fields([
   { name: "image", maxCount: 1 },
   { name: "photo_front", maxCount: 1 },
@@ -56,30 +56,39 @@ router.post("/", upload.fields([
       return res.json({ success: false, error: "user_id and name required" });
     }
 
-    // Get image paths
+    const db = getDatabase();
+    const { uploadToS3 } = require("../s3-upload.js");
+
+    console.log("Files received:", Object.keys(req.files || {}));
+    console.log("Photo fields:", {
+      photo_front: req.files?.photo_front ? "YES" : "NO",
+      photo_left: req.files?.photo_left ? "YES" : "NO",
+      photo_right: req.files?.photo_right ? "YES" : "NO",
+      photo_behind: req.files?.photo_behind ? "YES" : "NO"
+    });
+    // Upload images to S3
     let imagePath = null;
     let photoFront = null;
     let photoLeft = null;
     let photoRight = null;
     let photoBehind = null;
 
-    if (req.files.image) {
-      imagePath = "uploads/" + req.files.image[0].filename;
+    if (req.files?.image) {
+      imagePath = await uploadToS3(req.files.image[0], "horse_images");
     }
-    if (req.files.photo_front) {
-      photoFront = "uploads/" + req.files.photo_front[0].filename;
+    if (req.files?.photo_front) {
+      photoFront = await uploadToS3(req.files.photo_front[0], "horse_images");
     }
-    if (req.files.photo_left) {
-      photoLeft = "uploads/" + req.files.photo_left[0].filename;
+    if (req.files?.photo_left) {
+      photoLeft = await uploadToS3(req.files.photo_left[0], "horse_images");
     }
-    if (req.files.photo_right) {
-      photoRight = "uploads/" + req.files.photo_right[0].filename;
+    if (req.files?.photo_right) {
+      photoRight = await uploadToS3(req.files.photo_right[0], "horse_images");
     }
-    if (req.files.photo_behind) {
-      photoBehind = "uploads/" + req.files.photo_behind[0].filename;
+    if (req.files?.photo_behind) {
+      photoBehind = await uploadToS3(req.files.photo_behind[0], "horse_images");
     }
 
-    const db = getDatabase();
     const result = await db.collection("horses").insertOne({
       user_id,
       name,
@@ -104,6 +113,7 @@ router.post("/", upload.fields([
       photo_left: photoLeft,
       photo_right: photoRight,
       photo_behind: photoBehind,
+      historical_files: [],  // Initialize empty array for later
       createdAt: new Date()
     });
 

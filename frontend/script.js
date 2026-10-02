@@ -158,11 +158,14 @@ horseForm.addEventListener("submit", async (e) => {
     }
   });
 
-  // Add the image file if selected
-  const imageFile = formData.get("image");
-  if (imageFile) {
-    submitData.append("image", imageFile);
-  }
+    // Add ALL image files
+    const fileFields = ["image", "photo_front", "photo_left", "photo_right", "photo_behind"];
+    fileFields.forEach(field => {
+        const file = formData.get(field);
+        if (file) {
+            submitData.append(field, file);
+        }
+    });
 
   try {
     const response = await fetch("/api/horse", {
