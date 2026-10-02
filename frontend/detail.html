@@ -74,49 +74,58 @@
       </div>
     </div>
 
-    <!-- Vaccine Modal -->
-  <div id="vaccineModal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Registro Vacunas</h2>
-      
-      <form id="vaccineForm">
-        <div class="horse-input">
-          <label for="vaccineDate">Fecha de Vacunación *</label>
-          <input type="date" id="vaccineDate" name="vaccine_date" required>
-        </div>
+<!-- Vaccine Modal -->
+<div id="vaccineModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Registro Vacunas</h2>
+    
+    <form id="vaccineForm">
+      <div class="horse-input">
+        <label for="vaccineDate">Fecha de Vacunación *</label>
+        <input type="date" id="vaccineDate" name="vaccine_date" required>
+      </div>
 
-        <div class="horse-input">
-          <label for="vaccineName">Nombre de Vacuna *</label>
-          <input type="text" id="vaccineName" name="vaccine_name" required>
-        </div>
+      <div class="horse-input">
+        <label for="vaccineName">Nombre de la Vacuna *</label>
+        <input type="text" id="vaccineName" name="vaccine_name" required>
+      </div>
 
-        <div class="horse-input">
-          <label for="vaccineExpiration">Fecha de Expiración *</label>
-          <input type="date" id="vaccineExpiration" name="vaccine_expiration" required>
-        </div>
+      <div class="horse-input">
+        <label for="vaccineExpiration">Fecha de Vencimiento *</label>
+        <input type="date" id="vaccineExpiration" name="vaccine_expiration" required>
+      </div>
 
-        <div class="horse-input">
-          <label for="batchNumber">Número de Lote *</label>
-          <input type="text" id="batchNumber" name="batch_number" required>
-        </div>
+      <div class="horse-input">
+        <label for="batchNumber">Número de Lote</label>
+        <input type="text" id="batchNumber" name="batch_number">
+      </div>
 
-        <div class="horse-input">
-          <label for="route">Ruta/Vía *</label>
-          <input type="text" id="route" name="route" required>
-        </div>
+      <div class="horse-input">
+        <label for="route">Ruta de Administración</label>
+        <input type="text" id="route" name="route" placeholder="Ej: IM, IV, oral">
+      </div>
 
-        <div class="horse-input">
-          <label for="veterinarian">Veterinario *</label>
-          <select id="veterinarian" name="veterinarian_id" required>
-            <option value="">Seleccionar veterinario</option>
-          </select>
-        </div>
+      <div class="horse-input">
+        <label for="veterinarian">Veterinario *</label>
+        <select id="veterinarian" name="veterinarian_id" required>
+          <option value="">Seleccionar veterinario</option>
+        </select>
+      </div>
 
-        <button type="submit">Guardar</button>
-      </form>
-    </div>
+      <div class="horse-input">
+        <label for="vaccineFiles">Archivos (Certificado, Comprobante, etc.) - Máx 5</label>
+        <input type="file" id="vaccineFiles" name="vaccine_file" accept="image/*,.pdf" multiple>
+        <small>Puedes subir múltiples archivos (imágenes o PDFs)</small>
+        
+        <!-- Add this: Preview of selected files -->
+        <div id="filePreview" class="file-preview"></div>
+      </div>
+
+      <button type="submit">Guardar</button>
+    </form>
   </div>
+</div>
 
   <!-- Lab Test Modal -->
   <div id="labTestModal" class="modal">

@@ -133,43 +133,66 @@ function renderHorseDetail(horse) {
   : `<p class="no-records">No passports registered</p>`;
 
     // Build vaccine table
-        const vaccineList = horse.vaccines && horse.vaccines.length > 0
-        ? `
-            <table class="vaccine-table">
-            <thead>
-                <tr>
-                <th>Vacuna</th>
-                <th>Fecha</th>
-                <th>Lote</th>
-                <th>Ruta</th>
-                <th>Expira</th>
-                <th>Veterinario</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${horse.vaccines
-                .sort((a, b) => new Date(b.vaccine_date) - new Date(a.vaccine_date))
-                .map(v => {
-                    const vaccineDate = formatDateString(v.vaccine_date);
-                    const expirationDate = formatDateString(v.vaccine_expiration);
-                    const vetName = v.vet_name?.name || "N/A";
-                    
-                    return `
-                    <tr>
-                        <td>${v.vaccine_name}</td>
-                        <td>${vaccineDate}</td>
-                        <td>${v.batch_number}</td>
-                        <td>${v.route}</td>
-                        <td>${expirationDate}</td>
-                        <td>${vetName}</td>
-                    </tr>
-                    `;
-                })
-                .join("")}
-            </tbody>
-            </table>
-        `
-        : `<p>No vaccines registered</p>`;
+const vaccineList = horse.vaccines && horse.vaccines.length > 0
+  ? `
+    <div class="vaccine-cards">
+      ${horse.vaccines
+        .sort((a, b) => new Date(b.vaccine_date) - new Date(a.vaccine_date))
+        .map(v => {
+          const vaccineDate = new Date(v.vaccine_date).toLocaleDateString("es-ES");
+          const expirationDate = new Date(v.vaccine_expiration).toLocaleDateString("es-ES");
+          const vetName = v.vet_name?.name || "N/A";
+          
+          const filesHtml = v.files && v.files.length > 0
+            ? `
+              <div class="vaccine-files">
+                <strong>Archivos:</strong>
+                <div class="files-grid">
+                  ${v.files.map(f => `
+                    <a href="${f.path}" target="_blank" class="file-link">
+                      <span class="file-icon">📄</span>
+                      <span class="file-name">${f.name}</span>
+                    </a>
+                  `).join("")}
+                </div>
+              </div>
+            `
+            : `<div class="vaccine-files"><span class="no-files">Sin archivos</span></div>`;
+
+          return `
+            <div class="vaccine-card">
+              <div class="vaccine-header">
+                <h3>${v.vaccine_name}</h3>
+                <span class="vaccine-batch">${v.batch_number || "-"}</span>
+              </div>
+              
+              <div class="vaccine-details">
+                <div class="detail-item">
+                  <span class="label">Fecha:</span>
+                  <span class="value">${vaccineDate}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Vence:</span>
+                  <span class="value">${expirationDate}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Ruta:</span>
+                  <span class="value">${v.route || "-"}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Veterinario:</span>
+                  <span class="value">${vetName}</span>
+                </div>
+              </div>
+              
+              ${filesHtml}
+            </div>
+          `;
+        })
+        .join("")}
+    </div>
+  `
+  : `<p class="no-records">No vaccines registered</p>`;
                 
         // Build lab test table
         const labTestList = horse.lab_tests && horse.lab_tests.length > 0
@@ -591,6 +614,9 @@ const vaccineModal = document.getElementById("vaccineModal");
 const vaccineForm = document.getElementById("vaccineForm");
 const closeVaccineBtn = vaccineModal.querySelector(".close");
 
+// Keep array of accumulated files
+let vaccineFiles = [];
+
 // Close modal
 closeVaccineBtn.addEventListener("click", () => {
   vaccineModal.classList.remove("active");
@@ -608,8 +634,8 @@ async function loadVeterinarians() {
   try {
     const response = await fetch(`/api/veterinarian`);
     
-    const vets = await response.json();  // ← declare first
-    console.log("Vets received:", vets);  // ← then use it
+    const vets = await response.json();
+    console.log("Vets received:", vets);
     
     const select = document.getElementById("veterinarian");
     vets.forEach(vet => {
@@ -631,45 +657,108 @@ document.querySelectorAll(".record-btn").forEach(btn => {
     if (recordType === "passport") {
       passportModal.classList.add("active");
     } else if (recordType === "vaccines") {
-      loadVeterinarians();  // Load vets when opening modal
+      loadVeterinarians();
       vaccineModal.classList.add("active");
     }
   });
+});
+
+// Update file preview with accumulated files
+function updateFilePreview() {
+  const preview = document.getElementById("filePreview");
+  preview.innerHTML = "";
+  
+  if (vaccineFiles.length > 0) {
+    preview.innerHTML = `<strong>Archivos seleccionados (${vaccineFiles.length}):</strong>`;
+    
+    const list = document.createElement("ul");
+    list.className = "file-list";
+    
+    vaccineFiles.forEach((file, index) => {
+      const item = document.createElement("li");
+      item.style.display = "flex";
+      item.style.justifyContent = "space-between";
+      item.style.alignItems = "center";
+      
+      const name = document.createElement("span");
+      name.textContent = file.name;
+      
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.textContent = "✕";
+      removeBtn.style.background = "none";
+      removeBtn.style.border = "none";
+      removeBtn.style.color = "#d32f2f";
+      removeBtn.style.cursor = "pointer";
+      removeBtn.style.fontSize = "16px";
+      removeBtn.addEventListener("click", () => {
+        vaccineFiles.splice(index, 1);
+        updateFilePreview();
+      });
+      
+      item.appendChild(name);
+      item.appendChild(removeBtn);
+      list.appendChild(item);
+    });
+    
+    preview.appendChild(list);
+  }
+}
+
+// VACCINE FILE PREVIEW LISTENER - Accumulate files instead of replacing
+const fileInput = document.getElementById("vaccineFiles");
+fileInput.addEventListener("change", () => {
+  if (fileInput.files.length > 0) {
+    for (let file of fileInput.files) {
+      vaccineFiles.push(file);
+    }
+  }
+  
+  // Clear the input so user can select again from different folder
+  fileInput.value = "";
+  
+  // Update preview
+  updateFilePreview();
 });
 
 // Handle vaccine form submission
 vaccineForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   
-  const vaccineData = {
-    horse_id: currentHorseId,
-    user_id: localStorage.getItem("uid"),
-    vaccine_date: document.getElementById("vaccineDate").value,
-    vaccine_name: document.getElementById("vaccineName").value,
-    vaccine_expiration: document.getElementById("vaccineExpiration").value,
-    batch_number: document.getElementById("batchNumber").value,
-    route: document.getElementById("route").value,
-    veterinarian_id: document.getElementById("veterinarian").value
-  };
+  const formData = new FormData();
+  formData.append("horse_id", currentHorseId);
+  formData.append("user_id", localStorage.getItem("uid"));
+  formData.append("vaccine_date", document.getElementById("vaccineDate").value);
+  formData.append("vaccine_name", document.getElementById("vaccineName").value);
+  formData.append("vaccine_expiration", document.getElementById("vaccineExpiration").value);
+  formData.append("batch_number", document.getElementById("batchNumber").value);
+  formData.append("route", document.getElementById("route").value);
+  formData.append("veterinarian_id", document.getElementById("veterinarian").value);
+  
+  // Add all accumulated files
+  for (let file of vaccineFiles) {
+    formData.append("vaccine_file", file);
+  }
 
   try {
     const response = await fetch("/api/vaccine", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(vaccineData)
+      body: formData
     });
 
     const result = await response.json();
 
     if (result.success) {
-      console.log("Vaccine saved");
       vaccineModal.classList.remove("active");
       vaccineForm.reset();
+      vaccineFiles = [];  // Clear accumulated files
+      updateFilePreview();  // Clear preview
+      loadHorseDetail();
     } else {
-      console.error("Error:", result.error);
+      alert("Error: " + result.error);
     }
   } catch (error) {
-    console.error("Fetch error:", error);
+    console.error("Error:", error);
   }
 });
 
