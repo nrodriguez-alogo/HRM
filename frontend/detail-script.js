@@ -552,6 +552,97 @@ function renderHorseDetail(horse) {
       });
     });
 
+    // BUILD HISTORICAL FILES SECTION
+const historicalFilesList = horse.historical_files && horse.historical_files.length > 0
+  ? `
+    <div class="historical-files-grid">
+      ${horse.historical_files
+        .map((file, index) => {
+          const uploadDate = formatDateString(file.uploaded_at);
+          const isImage = file.file_type.startsWith('image/');
+          const fileIcon = isImage ? '🖼️' : '📄';
+          
+          return `
+            <div class="historical-file-card">
+              <div class="file-card-header">
+                <span class="file-icon">${fileIcon}</span>
+                <span class="file-name">${file.file_name}</span>
+              </div>
+              <div class="file-card-meta">
+                <small>Subido: ${uploadDate}</small>
+              </div>
+              <div class="file-card-actions">
+                <a href="${file.file_path}" target="_blank" class="file-view-btn">Ver</a>
+                <button class="file-delete-btn" data-file-index="${index}">Eliminar</button>
+              </div>
+            </div>
+          `;
+        })
+        .join("")}
+    </div>
+  `
+  : `<p class="no-files-message">Sin documentos históricos subidos</p>`;
+
+document.getElementById("historicalFilesList").innerHTML = historicalFilesList;
+
+// Handle historical file upload button
+document.querySelector(".upload-historical-btn").addEventListener("click", () => {
+  document.getElementById("historicalFileInput").click();
+});
+
+// Handle file selection
+document.getElementById("historicalFileInput").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append("historical_file", file);
+
+  try {
+    const response = await fetch(`/api/horse/${currentHorseId}/historical-file`, {
+      method: "POST",
+      body: formData
+    });
+
+    if (response.ok) {
+      // Reload horse data to show new file
+      const horseResponse = await fetch(`/api/horse/${currentHorseId}`);
+      const updatedHorse = await horseResponse.json();
+      renderHorseDetail(updatedHorse);
+    } else {
+      alert("Error uploading file");
+    }
+  } catch (error) {
+    console.error("Upload error:", error);
+    alert("Error uploading file");
+  }
+
+  // Reset input
+  e.target.value = "";
+});
+
+// Handle file delete
+document.querySelectorAll(".file-delete-btn").forEach(btn => {
+  btn.addEventListener("click", async (e) => {
+    if (!confirm("¿Eliminar este documento?")) return;
+    
+    const fileIndex = e.target.dataset.fileIndex;
+    try {
+      const response = await fetch(`/api/horse/${currentHorseId}/historical-file/${fileIndex}`, {
+        method: "DELETE"
+      });
+
+      if (response.ok) {
+        const horseResponse = await fetch(`/api/horse/${currentHorseId}`);
+        const updatedHorse = await horseResponse.json();
+        renderHorseDetail(updatedHorse);
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert("Error deleting file");
+    }
+  });
+});
     // ====================================================
     // BUILD TIMELINE - This is the key section
     // ====================================================

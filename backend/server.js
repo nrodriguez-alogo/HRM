@@ -43,6 +43,10 @@ app.use("/api/hauling", haulingRoutes);
 const medicalProcedureRoutes = require("./routes/medical-procedure.js");
 app.use("/api/medical-procedure", medicalProcedureRoutes);
 
+//Historical medical procedures files
+const historicalFileRoutes = require("./routes/historical-file.js");
+app.use("/api/horse", historicalFileRoutes);
+
 // Serve frontend files
 app.use(express.static(path.join(__dirname, "../frontend")));
 

@@ -29,31 +29,6 @@ const upload = multer({ storage });
 
 
 
-/* //Route handler: listen for POST requests, add is the endpoint path, req is the request and res is the result
- router.post("/add", async (req, res) => {
-  try {
-    //Getting data user input in form
-    const name = req.body.name;
-    const chipNumber = req.body.chip_number;
-    
-    //create new object (new row in the database)
-    const horse = new Horse(name, chip_number);
-    //validating data with method previously defined in aircraft class
-    horse.validate();
-    
-    //getting the database connection to mongo db
-    const db = getDatabase();
-    //saving the data
-    const result = await db.collection("horses").insertOne(horse);
-    
-    //tell the frontend it worked
-    res.json({success: true, id: result.insertedId});
-  } catch (error) { //telling the front end it didn't work
-    res.json({success: false, error: error.message});
-  }
-}); */
-
-
 router.get("/", async (req, res) => {
   try {
     const user_id = req.query.user_id; 
@@ -343,6 +318,15 @@ router.get("/:id", async (req, res) => {
     }
   }
 },
+{
+    $project: { 
+      vets: 0, 
+      lab_vets: 0, 
+      hauling_vets: 0, 
+      procedure_vets: 0,
+      "historical_files.uploaded_by": 0  // Optional: hide uploader info in response
+    } 
+  },
       { $project: { vets: 0, lab_vets: 0, hauling_vets: 0, procedure_vets: 0  } }
     ]).toArray();
 

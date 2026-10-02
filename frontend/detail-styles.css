@@ -805,6 +805,137 @@ header a:hover {
   display: block;
 }
 
+/* Historical Files Section */
+.historical-files-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border-left: 4px solid #4a90e2;
+}
+
+.historical-files-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.historical-files-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.upload-historical-btn {
+  padding: 8px 16px;
+  background: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.upload-historical-btn:hover {
+  background: #357abd;
+}
+
+.historical-files-list {
+  min-height: 50px;
+}
+
+.historical-files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.historical-file-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: box-shadow 0.2s;
+}
+
+.historical-file-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.file-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+}
+
+.file-icon {
+  font-size: 20px;
+}
+
+.file-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-card-meta {
+  font-size: 11px;
+  color: #999;
+}
+
+.file-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.file-view-btn {
+  flex: 1;
+  padding: 6px 10px;
+  background: #4a90e2;
+  color: white;
+  text-decoration: none;
+  border-radius: 3px;
+  font-size: 12px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.file-view-btn:hover {
+  background: #357abd;
+}
+
+.file-delete-btn {
+  flex: 1;
+  padding: 6px 10px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.file-delete-btn:hover {
+  background: #c0392b;
+}
+
+.no-files-message {
+  color: #999;
+  font-size: 14px;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
 /* Timeline Styles */
 .timeline {
   position: relative;
