@@ -51,21 +51,28 @@
     </main>
   </div>
 
-    <!-- Passport Modal -->
-  <div id="passportModal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Registro Pasaporte</h2>
-      
-      <form id="passportForm">
-        <div class="horse-input">
-          <label for="expeditionDate">Fecha de Expedición</label>
-          <input type="date" id="expeditionDate" name="expedition_date" required>
-        </div>
-        <button type="submit">Guardar</button>
-      </form>
+  <!-- Passport Modal -->
+    <div id="passportModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Registro Pasaporte</h2>
+        
+        <form id="passportForm">
+          <div class="horse-input">
+            <label for="expeditionDate">Fecha de Expedición *</label>
+            <input type="date" id="expeditionDate" name="passport_expedition_date" required>
+          </div>
+
+          <div class="horse-input">
+            <label for="passportFile">Archivo (Imagen o PDF)</label>
+            <input type="file" id="passportFile" name="passport_file" accept="image/*,.pdf">
+            <small>Puedes subir una foto o copia en PDF</small>
+          </div>
+
+          <button type="submit">Guardar</button>
+        </form>
+      </div>
     </div>
-  </div>
 
     <!-- Vaccine Modal -->
   <div id="vaccineModal" class="modal">
