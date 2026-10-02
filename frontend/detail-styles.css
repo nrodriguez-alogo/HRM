@@ -294,6 +294,152 @@ header a:hover {
   background-color: #111827;
 }
 
+/* Passport Cards */
+.passport-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
+}
+
+.passport-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.passport-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.passport-card.expired {
+  background: #fff5f5;
+  border-color: #ffcdd2;
+}
+
+.passport-card.active {
+  background: #f1f8f5;
+  border-color: #c8e6c9;
+}
+
+/* Passport Header */
+.passport-header {
+  margin-bottom: 12px;
+}
+
+.passport-status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.passport-status.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.passport-status.expired {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* Dates */
+.passport-dates {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.date-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.date-item .label {
+  font-size: 12px;
+  color: #999;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.date-item .value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Files Section */
+.passport-files {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 12px;
+}
+
+.file-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f0f4f8;
+  border: 1px solid #d0d8e0;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #007bff;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.file-badge:hover {
+  background: #e0e8f0;
+  border-color: #007bff;
+  color: #0056b3;
+}
+
+.file-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.no-file {
+  color: #999;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.no-records {
+  color: #999;
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .passport-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .passport-dates {
+    flex-direction: column;
+  }
+}
+
 .vaccine-table {
   width: 100%;
   border-collapse: collapse;

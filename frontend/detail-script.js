@@ -84,24 +84,53 @@ function renderHorseDetail(horse) {
 
     // BUILD PASSPORT LIST (add this here)
     const passportList = horse.passport && horse.passport.length > 0
-    ? horse.passport
+  ? `
+    <div class="passport-cards">
+      ${horse.passport
         .sort((a, b) => new Date(b.passport_expedition_date) - new Date(a.passport_expedition_date))
         .map(p => {
           const expeditionDate = new Date(p.passport_expedition_date);
           const expirationDate = new Date(expeditionDate.getFullYear() + 1, expeditionDate.getMonth(), expeditionDate.getDate());
           const isExpired = new Date() > expirationDate;
-          const statusIcon = isExpired ? "❌" : "✅";
+          const statusIcon = isExpired ? "❌ Vencido" : "✅ Vigente";
+          const statusClass = isExpired ? "expired" : "active";
           const formattedDate = formatDateString(p.passport_expedition_date);
+          const expirationFormatted = formatDateString(new Date(expirationDate).toISOString().split('T')[0]);
           
+          const fileSection = p.file_path 
+            ? `
+              <div class="passport-files">
+                <a href="${p.file_path}" target="_blank" class="file-badge">
+                  <span class="file-icon">📄</span>
+                  <span class="file-name">${p.file_name}</span>
+                </a>
+              </div>
+            `
+            : `<div class="passport-files"><span class="no-file">Sin archivo adjunto</span></div>`;
+
           return `
-            <div class="passport-item">
-              <span>${statusIcon}</span>
-              <span>${formattedDate}</span>
+            <div class="passport-card ${statusClass}">
+              <div class="passport-header">
+                <div class="passport-status ${statusClass}">${statusIcon}</div>
+                <div class="passport-dates">
+                  <div class="date-item">
+                    <span class="label">Expedido:</span>
+                    <span class="value">${formattedDate}</span>
+                  </div>
+                  <div class="date-item">
+                    <span class="label">Vence:</span>
+                    <span class="value">${expirationFormatted}</span>
+                  </div>
+                </div>
+              </div>
+              ${fileSection}
             </div>
           `;
         })
-        .join("")
-    : `<p>No passports registered</p>`;
+        .join("")}
+    </div>
+  `
+  : `<p class="no-records">No passports registered</p>`;
 
     // Build vaccine table
         const vaccineList = horse.vaccines && horse.vaccines.length > 0
@@ -523,37 +552,36 @@ document.querySelectorAll(".record-btn").forEach(btn => {
   });
 });
 
-// Handle passport form submission
 passportForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   
-  const expeditionDate = document.getElementById("expeditionDate").value;
+  const formData = new FormData();
+  formData.append("horse_id", currentHorseId);
+  formData.append("user_id", localStorage.getItem("uid"));
+  formData.append("passport_expedition_date", document.getElementById("expeditionDate").value);
   
-  const passportData = {
-    horse_id: currentHorseId,
-    user_id: localStorage.getItem("uid"),
-    passport_expedition_date: expeditionDate,
-    createdAt: new Date().toISOString()
-  };
+  const fileInput = document.getElementById("passportFile");
+  if (fileInput && fileInput.files.length > 0) {
+    formData.append("passport_file", fileInput.files[0]);
+  }
 
   try {
     const response = await fetch("/api/passport", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(passportData)
+      body: formData
     });
 
     const result = await response.json();
 
     if (result.success) {
-      console.log("Passport saved");
       passportModal.classList.remove("active");
       passportForm.reset();
+      loadHorseDetail();
     } else {
-      console.error("Error:", result.error);
+      alert("Error: " + result.error);
     }
   } catch (error) {
-    console.error("Fetch error:", error);
+    console.error("Error:", error);
   }
 });
 
