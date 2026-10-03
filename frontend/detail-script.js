@@ -413,7 +413,7 @@ function renderHorseDetail(horse) {
                 </div>
                 <div class="info-item">
                   <strong>Edad:</strong>
-                  <span>${age} years</span>
+                  <span>${age} años</span>
                 </div>
                 <div class="info-item">
                   <strong>Sexo:</strong>
