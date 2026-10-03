@@ -12,6 +12,40 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+
+// GOOGLE LOGIN / SIGNUP
+const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+document.getElementById("googleLogin-btn").addEventListener("click", async () => {
+  try {
+    // Firebase opens Google's popup
+    const result = await auth.signInWithPopup(googleProvider);
+    const uid = result.user.uid;
+
+    localStorage.setItem("uid", uid);
+
+    // Only the first time: save the user to MongoDB, same as email sign-up
+    if (result.additionalUserInfo.isNewUser) {
+      const email = result.user.email;
+      const userName = result.user.displayName;
+
+      const response = await fetch("/api/user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uid, email, userName })
+      });
+
+      const saved = await response.json();
+      console.log("Google user saved to MongoDB:", saved);
+    }
+
+    window.location.href = "index.html";
+  } catch (error) {
+    console.error("Google login error:", error);
+    alert("No se pudo iniciar sesión con Google");
+  }
+});
+
 console.log("Firebase initialized:", auth); 
 
 // Toggle between login and signup forms
