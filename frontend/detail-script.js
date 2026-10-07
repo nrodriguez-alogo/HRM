@@ -131,6 +131,29 @@ function renderHorseDetail(horse) {
         </div>
       `
       : `<p class="no-records">No passports registered</p>`;
+      
+    // Check passport status (1 year from expedition date)
+    let passportStatus = "Sin pasaporte";
+    let passportClass = "no-passport";
+
+    if (horse.passport && horse.passport.length > 0) {
+      // Get the most recent passport (assuming already sorted)
+      const latestPassport = horse.passport[0];
+      const expeditionDate = new Date(latestPassport.passport_expedition_date);
+      const expirationDate = new Date(
+        expeditionDate.getFullYear() + 1, 
+        expeditionDate.getMonth(), 
+        expeditionDate.getDate()
+      );
+      
+      if (new Date() > expirationDate) {
+        passportStatus = "❌ Pasaporte Vencido";
+        passportClass = "passport-expired";
+      } else {
+        passportStatus = "✅ Pasaporte Vigente";
+        passportClass = "passport-active";
+      }
+    }
 
     // BUILD VACCINE LIST
     const vaccineList = horse.vaccines && horse.vaccines.length > 0
@@ -194,6 +217,23 @@ function renderHorseDetail(horse) {
       `
       : `<p class="no-records">No vaccines registered</p>`;
 
+      // Check if any vaccines are expired
+      let vaccineStatus = "Sin vacunas";
+      let vaccineClass = "no-vaccines";
+
+      if (horse.vaccines && horse.vaccines.length > 0) {
+        const hasExpiredVaccines = horse.vaccines.some(v => 
+          new Date() > new Date(v.vaccine_expiration)
+        );
+        
+        if (hasExpiredVaccines) {
+          vaccineStatus = "⚠️ Vacunas Vencidas";
+          vaccineClass = "vaccines-expired";
+        } else {
+          vaccineStatus = "✅ Vacunas al día";
+          vaccineClass = "vaccines-active";
+        }
+}
     // BUILD LAB TEST LIST
     const labTestList = horse.lab_tests && horse.lab_tests.length > 0
       ? `
@@ -367,10 +407,15 @@ function renderHorseDetail(horse) {
       </div>
       <div class="sidebar-info">
         <h2>${horse.name}</h2>
+        <div class="status-badges">
+          <span class="badge ${passportClass}">${passportStatus}</span>
+          <span class="badge ${vaccineClass}">${vaccineStatus}</span>
+        </div>
+        <p><strong>Microchip:</strong> ${horse.chip_number}</p>
         <p><strong>Fecha de nacimiento:</strong> ${formattedDate}</p>
         <p><strong>Edad:</strong> ${age} años</p>
         <a href="https://equisoft.com.co/app/zparticipacion_general.php?Tipo_busqueda=7&id=${horse.fec_register}" target="_blank">
-          Ver en equisoft
+          <p>Registro FEC: ${horse.fec_register}</p>
         </a>
       </div>
     `;
