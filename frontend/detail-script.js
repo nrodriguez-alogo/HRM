@@ -599,7 +599,7 @@ document.getElementById("historicalFileInput").addEventListener("change", async 
   formData.append("historical_file", file);
 
   try {
-    const response = await fetch(`/api/horse/${currentHorseId}/historical-file`, {
+    const response = await fetch(`/api/historical-file/${currentHorseId}`, {
       method: "POST",
       body: formData
     });
@@ -628,7 +628,7 @@ document.querySelectorAll(".file-delete-btn").forEach(btn => {
     
     const fileIndex = e.target.dataset.fileIndex;
     try {
-      const response = await fetch(`/api/horse/${currentHorseId}/historical-file/${fileIndex}`, {
+      const response = await fetch(`/api/historical-file/${currentHorseId}/historical-file/${fileIndex}`, {
         method: "DELETE"
       });
 

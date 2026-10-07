@@ -9,6 +9,7 @@ const path = require("path");
 app.use(express.json());
 
 // Import database
+
 const { connectDatabase } = require("./database.js");
 
 //Load the horse.js file from the routes folder
@@ -45,7 +46,7 @@ app.use("/api/medical-procedure", medicalProcedureRoutes);
 
 //Historical medical procedures files
 const historicalFileRoutes = require("./routes/historical-file.js");
-app.use("/api/horse", historicalFileRoutes);
+app.use("/api/historical-file", historicalFileRoutes);
 
 // Serve frontend files
 app.use(express.static(path.join(__dirname, "../frontend")));
