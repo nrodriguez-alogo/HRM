@@ -673,7 +673,7 @@ document.querySelectorAll(".file-delete-btn").forEach(btn => {
     
     const fileIndex = e.target.dataset.fileIndex;
     try {
-      const response = await fetch(`/api/historical-file/${currentHorseId}/historical-file/${fileIndex}`, {
+      const response = await fetch(`/api/historical-file/${currentHorseId}/${fileIndex}`, {
         method: "DELETE"
       });
 
