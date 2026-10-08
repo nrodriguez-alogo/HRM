@@ -1421,6 +1421,27 @@ procedureForm.addEventListener("submit", async (e) => {
   }
 });
 
+
+// Configuration Modal window
+const configModal = document.getElementById("configModal");
+const configBtn = document.getElementById("configBtn");
+const configCloseBtn = configModal.querySelector(".close");
+
+configBtn.addEventListener("click", () => {
+  configModal.classList.add("active");
+});
+
+configCloseBtn.addEventListener("click", () => {
+  configModal.classList.remove("active");
+});
+
+window.addEventListener("click", (event) => {
+  if (event.target === configModal) {
+    configModal.classList.remove("active");
+  }
+});
+
+
 // Load vets on page load
 loadHaulingVeterinarians();
 
