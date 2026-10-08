@@ -9,6 +9,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
     window.location.href = "login.html";
   });
 });
+
 // Load user data on page load
 async function loadUserData() {
   try {
@@ -26,6 +27,26 @@ async function loadUserData() {
       document.getElementById("displayUid").textContent = result.uid;
       document.getElementById("displayEmail").textContent = result.email;
       document.getElementById("displayUserName").textContent = result.userName || "No establecido";
+      
+      // Display FEC Register
+      const fecEl = document.getElementById("displayFec");
+      if (result.fecRegister) {
+        fecEl.textContent = result.fecRegister;
+        fecEl.classList.remove("empty");
+      } else {
+        fecEl.textContent = "No establecido";
+        fecEl.classList.add("empty");
+      }
+      
+      // Display TP Number
+      const tpEl = document.getElementById("displayTp");
+      if (result.tpNumber) {
+        tpEl.textContent = result.tpNumber;
+        tpEl.classList.remove("empty");
+      } else {
+        tpEl.textContent = "No establecido";
+        tpEl.classList.add("empty");
+      }
     } else {
       console.error("Error loading user data:", result.error);
     }

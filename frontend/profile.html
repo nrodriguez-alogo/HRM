@@ -1,34 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Perfil</title>
-    <link rel="stylesheet" href="./styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Perfil</title>
+  <link rel="stylesheet" href="profile-styles.css">
 </head>
 <body>
-    <header>
-        <div>Halter</div>
-        <div> 
-            <button id="backBtn">← Volver</button>
-        </div>
-        <div>
-            <span id="userEmail"></span>
-            <button id="logoutBtn">Cerrar sesión</button>
-        </div>
-    </header>
+  <header>
+    <button id="backBtn">Volver</button>
+    <button id="logoutBtn">Cerrar sesión</button>
+  </header>
 
-    <main>
-        <section id="userInfo">
-            <h2>Información del Usuario</h2>
-            <div id="userDetails">
-            <p><strong>UID:</strong> <span id="displayUid"></span></p>
-            <p><strong>Email:</strong> <span id="displayEmail"></span></p>
-            <p><strong>Nombre de Usuario:</strong> <span id="displayUserName"></span></p>
-            </div>
-        </section>
-    </main>
+  <main>
+    <section class="profile-section">
+      <h2>Información del Usuario</h2>
+      <div class="profile-item">
+        <strong>Nombre</strong>
+        <span id="displayUserName"></span>
+      </div>
+      <div class="profile-item">
+        <strong>Email</strong>
+        <span id="displayEmail"></span>
+      </div>
+      <div class="profile-item">
+        <strong>UID</strong>
+        <span id="displayUid"></span>
+      </div>
+    </section>
 
-<script src="profile-script.js"></script>
+    <section class="profile-section">
+      <h2>Registros Profesionales</h2>
+      <div class="profile-item">
+        <strong>FEC Register</strong>
+        <span id="displayFec"></span>
+      </div>
+      <div class="profile-item">
+        <strong>Tarjeta Profesional Veterinaria</strong>
+        <span id="displayTp"></span>
+      </div>
+    </section>
+  </main>
+
+  <script src="profile-script.js"></script>
 </body>
 </html>
