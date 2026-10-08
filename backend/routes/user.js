@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { getDatabase } = require("../database.js");
 
+
 // POST /api/users — save new user
 router.post("/", async (req, res) => {
   try {
@@ -24,5 +25,28 @@ router.post("/", async (req, res) => {
     res.json({ success: false, error: error.message });
   }
 });
+
+// GET /api/user/:uid — get user data by uid
+router.get("/:uid", async (req, res) => {
+  try {
+    const { uid } = req.params;
+
+    if (!uid) {
+      return res.json({ success: false, error: "uid required" });
+    }
+
+    const db = getDatabase();
+    const user = await db.collection("users").findOne({ uid });
+
+    if (user) {
+      res.json({ success: true, uid: user.uid, email: user.email, userName: user.userName });
+    } else {
+      res.json({ success: false, error: "User not found" });
+    }
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+});
+
 
 module.exports = router;

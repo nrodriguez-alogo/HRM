@@ -11,18 +11,8 @@
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
-  // Check if user is logged in
-/*   auth.onAuthStateChanged((user) => {
-    if (!user) {
-      // Not logged in, redirect to login
-      window.location.href = "login.html";
-    } else {
-      // User is logged in, allow page to load
-      console.log("Logged in as:", user.email);
-    }
-  }); */
-
   //Logout
+
   // Show user email
   auth.onAuthStateChanged((user) => {
     if (user) {
@@ -108,6 +98,11 @@ window.addEventListener("click", (event) => {
   if (event.target === modal) {
     modal.classList.remove("active");
   }
+});
+
+//Redirect to user's profile page 
+document.getElementById("profileBtn").addEventListener("click", () => {
+  window.location.href = "./profile.html";
 });
 
 // Handle form submission
