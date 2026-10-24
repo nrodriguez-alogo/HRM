@@ -350,5 +350,33 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// PUT /api/horse/:id/care — save feeding and care data on the horse
+router.put("/:id/care", async (req, res) => {
+  try {
+    const { ObjectId } = require("mongodb");
+    const horseId = req.params.id;
+
+    if (!ObjectId.isValid(horseId)) {
+      return res.json({ success: false, error: "Invalid horse ID" });
+    }
+
+    const { location, feeding, groom, current_treatment } = req.body;
+
+    const db = getDatabase();
+    const result = await db.collection("horses").updateOne(
+      { _id: new ObjectId(horseId) },
+      { $set: { location, feeding, groom, current_treatment } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.json({ success: false, error: "Horse not found" });
+    }
+
+    res.json({ success: true, message: "Care data saved" });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+});
+
 //Making router available to other files
 module.exports = router;

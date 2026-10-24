@@ -38,6 +38,7 @@
             <button class="record-btn" data-record="medical">Registro Examen de Laboratorio</button>
             <button class="record-btn" data-record="hauling">Registro Traslado</button>
             <button class="record-btn" data-record="procedure">Registrar Procedimiento Médico</button>
+            <button class="record-btn" data-record="care">Alimentación y cuidado</button>
              <button class="record-btn" id="configBtn">⚙️ Configuración</button>
             </div>
             <div id="horseDetail"></div>
@@ -295,6 +296,38 @@
     </form>
   </div>
 </div>
+
+  <!-- Care Modal -->
+  <div id="careModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Alimentación y cuidado</h2>
+
+      <form id="careForm">
+        <div class="horse-input">
+          <label for="careLocation">Lugar</label>
+          <input type="text" id="careLocation" name="location" placeholder="Club Guaymaral">
+        </div>
+
+        <div class="horse-input">
+          <label for="careFeeding">Alimentación</label>
+          <textarea id="careFeeding" name="feeding" rows="3" placeholder="3 kg concentrado AM/PM, heno a voluntad"></textarea>
+        </div>
+
+        <div class="horse-input">
+          <label for="careGroom">Palafrenero</label>
+          <input type="text" id="careGroom" name="groom">
+        </div>
+
+        <div class="horse-input">
+          <label for="careTreatment">Medicamento o tratamiento en curso</label>
+          <textarea id="careTreatment" name="current_treatment" rows="3" placeholder="Medicamento, dosis y hasta cuándo"></textarea>
+        </div>
+
+        <button type="submit">Guardar</button>
+      </form>
+    </div>
+  </div>
 
 <!-- Configuration Modal -->
 <div id="configModal" class="modal">

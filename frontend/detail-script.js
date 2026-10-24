@@ -411,6 +411,7 @@ function renderHorseDetail(horse) {
           <span class="badge ${passportClass}">${passportStatus}</span>
           <span class="badge ${vaccineClass}">${vaccineStatus}</span>
         </div>
+        <p><strong>Alimentacion:</strong> ${horse.feeding}</p>
         <p><strong>Microchip:</strong> ${horse.chip_number}</p>
         <p><strong>Fecha de nacimiento:</strong> ${formattedDate}</p>
         <p><strong>Edad:</strong> ${age} años</p>
@@ -479,6 +480,30 @@ function renderHorseDetail(horse) {
                 <div class="info-item">
                   <strong>Criadero:</strong>
                   <span>${horse.breeding_place || "N/A"}</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="accordion-section">
+            <h3 class="accordion-header">Alimentación y cuidado</h3>
+            <div class="accordion-content">
+              <div class="info-grid">
+                <div class="info-item">
+                  <strong>Alimentación:</strong>
+                  <span>${horse.feeding}</span>
+                </div>
+                <div class="info-item">
+                  <strong>Palafrenero:</strong>
+                  <span>${horse.groom} años</span>
+                </div>
+                <div class="info-item">
+                  <strong>Lugar de residencia:</strong>
+                  <span>${horse.location || "N/A"}</span>
+                </div>
+                <div class="info-item">
+                  <strong>Medicamento o tratamiento en curso: </strong>
+                  <span>${horse.current_treatment|| "N/A"}</span>
                 </div>
               </div>
             </div>
@@ -1421,6 +1446,66 @@ procedureForm.addEventListener("submit", async (e) => {
   }
 });
 
+//Care modal window
+const careModal = document.getElementById("careModal");
+const closeCareBtn = careModal.querySelector(".close");
+
+// Close modal
+closeCareBtn.addEventListener("click", () => {
+  careModal.classList.remove("active");
+});
+
+// Click outside to close
+window.addEventListener("click", (event) => {
+  if (event.target === careModal) {
+    careModal.classList.remove("active");
+  }
+});
+
+// Handle care button click
+document.querySelectorAll(".record-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    const recordType = e.target.dataset.record;
+
+    if (recordType === "care") {
+      careModal.classList.add("active");
+    }
+  });
+});
+
+// Handle care form submission
+const careForm = document.getElementById("careForm");
+
+careForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const careData = {
+    location: document.getElementById("careLocation").value,
+    feeding: document.getElementById("careFeeding").value,
+    groom: document.getElementById("careGroom").value,
+    current_treatment: document.getElementById("careTreatment").value
+  };
+
+  try {
+    const response = await fetch(`/api/horse/${currentHorseId}/care`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(careData)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log("Care data saved");
+      careModal.classList.remove("active");
+      careForm.reset();
+    } else {
+      alert("Error: " + result.error);
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+});
 
 // Configuration Modal window
 const configModal = document.getElementById("configModal");
