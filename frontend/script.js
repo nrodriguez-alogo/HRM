@@ -114,8 +114,6 @@ horseForm.addEventListener("submit", async (e) => {
   // Get all form data
   const formData = new FormData(horseForm);
   
-  // Get selected roles (checkboxes return array)
-  const roles = formData.getAll("role");
   const  uid = localStorage.getItem("uid"); 
   // Build object
   const horseData = {
@@ -124,7 +122,6 @@ horseForm.addEventListener("submit", async (e) => {
     date_of_birth: formData.get("date_of_birth"),
     chip_number: formData.get("chip_number"),
     fec_register: formData.get("fec_register"),
-    roles,  // array of selected roles
     country_of_birth: formData.get("country_of_birth"),
     breeding_place: formData.get("breeding_place"),
     sex: formData.get("sex"),

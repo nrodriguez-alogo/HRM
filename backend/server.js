@@ -48,6 +48,10 @@ app.use("/api/medical-procedure", medicalProcedureRoutes);
 const historicalFileRoutes = require("./routes/historical-file.js");
 app.use("/api/historical-file", historicalFileRoutes);
 
+//Roles database
+const roleRoutes = require("./routes/role.js");
+app.use("/api/role", roleRoutes);
+
 // Serve frontend files
 app.use(express.static(path.join(__dirname, "../frontend")));
 

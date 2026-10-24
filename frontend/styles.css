@@ -154,23 +154,6 @@ legend {
   resize: vertical;
 }
 
-.checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.checkbox-group label {
-  display: flex;
-  align-items: center;
-  margin: 0;
-}
-
-.checkbox-group input[type="checkbox"] {
-  margin-right: 8px;
-  width: auto;
-}
-
 #horseForm button {
   width: 100%;
   padding: 12px;

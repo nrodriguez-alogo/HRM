@@ -15,12 +15,30 @@ router.post("/", async (req, res) => {
     const db = getDatabase();
     const result = await db.collection("users").insertOne({
       uid,
-      email,
+      email: email.toLowerCase(),
       userName,
       createdAt: new Date()
     });
 
     res.json({ success: true, userId: result.insertedId });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+});
+
+// GET /api/user/by-email/:email — find a user by email
+router.get("/by-email/:email", async (req, res) => {
+  try {
+    const email = req.params.email.trim().toLowerCase();
+
+    const db = getDatabase();
+    const user = await db.collection("users").findOne({ email });
+
+    if (user) {
+      res.json({ success: true, uid: user.uid, email: user.email, userName: user.userName });
+    } else {
+      res.json({ success: false, error: "User not found" });
+    }
   } catch (error) {
     res.json({ success: false, error: error.message });
   }

@@ -495,7 +495,7 @@ function renderHorseDetail(horse) {
                 </div>
                 <div class="info-item">
                   <strong>Palafrenero:</strong>
-                  <span>${horse.groom} años</span>
+                  <span>${horse.groom}</span>
                 </div>
                 <div class="info-item">
                   <strong>Lugar de residencia:</strong>
@@ -1526,6 +1526,69 @@ window.addEventListener("click", (event) => {
   }
 });
 
+// Role form
+const roleForm = document.getElementById("roleForm");
+const roleEmailInput = document.getElementById("roleEmail");
+const roleNameInput = document.getElementById("roleName");
+const roleEmailHint = document.getElementById("roleEmailHint");
+
+// When the email is filled in, look for an existing account and fill the name
+roleEmailInput.addEventListener("change", async () => {
+  const email = roleEmailInput.value.trim().toLowerCase();
+  roleEmailHint.textContent = "";
+
+  if (!email) return;
+
+  try {
+    const response = await fetch(`/api/user/by-email/${encodeURIComponent(email)}`);
+    const result = await response.json();
+
+    if (result.success) {
+      roleNameInput.value = result.userName || "";
+      roleEmailHint.textContent = "✓ Usuario encontrado en Halter";
+    } else {
+      roleEmailHint.textContent = "Sin cuenta: se vinculará cuando se registre";
+    }
+  } catch (error) {
+    console.error("Error looking up email:", error);
+  }
+});
+
+// Handle role form submission
+roleForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const roleData = {
+    email: roleEmailInput.value,
+    name: roleNameInput.value,
+    horse_id: currentHorseId,
+    role: document.getElementById("roleType").value,
+    start_date: document.getElementById("roleStartDate").value,
+    end_date: document.getElementById("roleEndDate").value,
+    created_by: localStorage.getItem("uid")
+  };
+
+  try {
+    const response = await fetch("/api/role", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(roleData)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log("Role saved");
+      alert("Rol agregado");
+      roleForm.reset();
+      roleEmailHint.textContent = "";
+    } else {
+      alert("Error: " + result.error);
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+});
 
 // Load vets on page load
 loadHaulingVeterinarians();

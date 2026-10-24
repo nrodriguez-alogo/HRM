@@ -334,9 +334,52 @@
   <div class="modal-content">
     <span class="close">&times;</span>
     <h2>Configuración</h2>
-    <div id="configContent">
-      <!-- Will be filled later -->
-    </div>
+        <div id="configContent">
+
+          <!-- Agregar rol section -->
+          <section class="config-section">
+            <h3>Agregar rol</h3>
+
+            <form id="roleForm">
+                            <div class="horse-input">
+                <label for="roleEmail">Email</label>
+                <input type="email" id="roleEmail" name="email" placeholder="correo@ejemplo.com">
+                <small id="roleEmailHint" class="role-hint"></small>
+              </div>
+
+              <div class="horse-input">
+                <label for="roleName">Nombre *</label>
+                <input type="text" id="roleName" name="name" required>
+              </div>
+
+              <div class="horse-input">
+                <label for="roleType">Rol *</label>
+                <select id="roleType" name="role" required>
+                  <option value="">Seleccionar rol</option>
+                  <option value="Veterinario">Veterinario</option>
+                  <option value="Propietario">Propietario</option>
+                  <option value="Entrenador">Entrenador</option>
+                  <option value="Cuidador">Cuidador</option>
+                  <option value="Palafrenero">Palafrenero</option>
+                  <option value="Montador">Montador</option>
+                </select>
+              </div>
+
+              <div class="horse-input">
+                <label for="roleStartDate">Fecha de inicio *</label>
+                <input type="date" id="roleStartDate" name="start_date" required>
+              </div>
+
+              <div class="horse-input">
+                <label for="roleEndDate">Fecha de fin</label>
+                <input type="date" id="roleEndDate" name="end_date">
+              </div>
+
+              <button type="submit">Agregar rol</button>
+            </form>
+          </section>
+
+        </div>
   </div>
 </div>
 

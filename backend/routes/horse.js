@@ -50,7 +50,7 @@ router.post("/", upload.fields([
   { name: "photo_behind", maxCount: 1 }
 ]), async (req, res) => {
   try {
-    const { user_id, name, date_of_birth, roles, country_of_birth, breeding_place, sex, color, breed, father, mother, mothers_father, head_description, lf_description, rf_description, lh_description, rh_description, body_description } = req.body;
+    const { user_id, name, date_of_birth, country_of_birth, breeding_place, sex, color, breed, father, mother, mothers_father, head_description, lf_description, rf_description, lh_description, rh_description, body_description } = req.body;
 
     if (!user_id || !name) {
       return res.json({ success: false, error: "user_id and name required" });
@@ -93,7 +93,6 @@ router.post("/", upload.fields([
       user_id,
       name,
       date_of_birth,
-      roles: Array.isArray(roles) ? roles : roles ? [roles] : [],
       country_of_birth,
       breeding_place,
       sex,
