@@ -430,7 +430,7 @@ function renderHorseDetail(horse) {
     const isOwner = activeRoles.some(r => r.user_id === currentUid && r.role === "Propietario");
 
     document.getElementById("configBtn").style.display = isOwner ? "inline-block" : "none";
-         
+
     // BUILD SIDEBAR
     const sidebarHtml = `
       <div class="sidebar-image">
@@ -442,13 +442,15 @@ function renderHorseDetail(horse) {
           <span class="badge ${passportClass}">${passportStatus}</span>
           <span class="badge ${vaccineClass}">${vaccineStatus}</span>
         </div>
-        <p><strong>Alimentacion:</strong> ${horse.feeding}</p>
-        <p><strong>Microchip:</strong> ${horse.chip_number}</p>
+        <p><strong>Alimentacion:</strong> ${horse.feeding || "N/A"}</p>
+        <p><strong>Microchip:</strong> ${horse.chip_number || "N/A"}</p>
         <p><strong>Fecha de nacimiento:</strong> ${formattedDate}</p>
         <p><strong>Edad:</strong> ${age} años</p>
-        <a href="https://equisoft.com.co/app/zparticipacion_general.php?Tipo_busqueda=7&id=${horse.fec_register}" target="_blank">
-          <p>Registro FEC: ${horse.fec_register}</p>
-        </a>
+         ${horse.fec_register
+          ? `<a href="https://equisoft.com.co/app/zparticipacion_general.php?Tipo_busqueda=7&id=${horse.fec_register}" target="_blank">
+               <p>Registro FEC: ${horse.fec_register}</p>
+             </a>`
+          : `<p><strong>Registro FEC:</strong> N/A</p>`}
                 <div class="sidebar-roles">
           <h3>Roles</h3>
           ${rolesList}
