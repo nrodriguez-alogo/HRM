@@ -425,6 +425,12 @@ function renderHorseDetail(horse) {
           .join("")
       : `<p class="no-roles">Sin roles asignados</p>`;
 
+     // Show "Configuración" only to the horse's current owners
+    const currentUid = localStorage.getItem("uid");
+    const isOwner = activeRoles.some(r => r.user_id === currentUid && r.role === "Propietario");
+
+    document.getElementById("configBtn").style.display = isOwner ? "inline-block" : "none";
+         
     // BUILD SIDEBAR
     const sidebarHtml = `
       <div class="sidebar-image">
