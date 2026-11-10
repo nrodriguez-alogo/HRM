@@ -400,6 +400,31 @@ function renderHorseDetail(horse) {
       `
       : `<p>No medical procedures registered</p>`;
 
+// BUILD ROLES LIST (only active roles)
+    const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" });   // "YYYY-MM-DD"
+    const roleOrder = ["Propietario", "Entrenador", "Montador", "Veterinario", "Cuidador", "Palafrenero"];
+
+    const activeRoles = (horse.roles || [])
+      .filter(r => r.start_date <= today && (!r.end_date || r.end_date >= today))
+      .sort((a, b) => roleOrder.indexOf(a.role) - roleOrder.indexOf(b.role));
+
+    // Group names by role: { Propietario: ["Natalia", "Juan"], Entrenador: ["Yade"] }
+    const namesByRole = {};
+    activeRoles.forEach(r => {
+      if (!namesByRole[r.role]) {
+        namesByRole[r.role] = [];
+      }
+      namesByRole[r.role].push(r.name);
+    });
+
+    // One line per role, in the order of roleOrder
+    const rolesList = activeRoles.length > 0
+      ? roleOrder
+          .filter(role => namesByRole[role])
+          .map(role => `<p><strong>${role}:</strong> ${namesByRole[role].join(", ")}</p>`)
+          .join("")
+      : `<p class="no-roles">Sin roles asignados</p>`;
+
     // BUILD SIDEBAR
     const sidebarHtml = `
       <div class="sidebar-image">
@@ -418,6 +443,10 @@ function renderHorseDetail(horse) {
         <a href="https://equisoft.com.co/app/zparticipacion_general.php?Tipo_busqueda=7&id=${horse.fec_register}" target="_blank">
           <p>Registro FEC: ${horse.fec_register}</p>
         </a>
+                <div class="sidebar-roles">
+          <h3>Roles</h3>
+          ${rolesList}
+        </div>
       </div>
     `;
     document.getElementById("horseSidebar").innerHTML = sidebarHtml;
@@ -1483,7 +1512,8 @@ careForm.addEventListener("submit", async (e) => {
     location: document.getElementById("careLocation").value,
     feeding: document.getElementById("careFeeding").value,
     groom: document.getElementById("careGroom").value,
-    current_treatment: document.getElementById("careTreatment").value
+    current_treatment: document.getElementById("careTreatment").value,
+    updated_by: localStorage.getItem("uid")
   };
 
   try {
@@ -1582,6 +1612,8 @@ roleForm.addEventListener("submit", async (e) => {
       alert("Rol agregado");
       roleForm.reset();
       roleEmailHint.textContent = "";
+      configModal.classList.remove("active");
+            loadHorseDetail();   // refresh sidebar with the new role
     } else {
       alert("Error: " + result.error);
     }

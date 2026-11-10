@@ -7,6 +7,8 @@ const router = express.Router();
 //Import database connection
 const { getDatabase } = require("../database.js");
 
+const { ObjectId } = require("mongodb");
+
 //Import horse class
 const Horse = require("../models/Horse.js");
 
@@ -29,11 +31,30 @@ const upload = multer({
 });
 
 
+// GET /api/horse?user_id=... — horses where the user has an active role
 router.get("/", async (req, res) => {
   try {
-    const user_id = req.query.user_id; 
+    const user_id = req.query.user_id;
     const db = getDatabase();
-    const horses = await db.collection("horses").find({ user_id }).toArray();
+    const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" });   // "YYYY-MM-DD"
+
+    // 1. Find this user's active roles
+    const roles = await db.collection("roles").find({
+      user_id,
+      start_date: { $lte: today },
+      $or: [
+        { end_date: null },
+        { end_date: { $gte: today } }
+      ]
+    }).toArray();
+
+    // 2. Get the horse ids from those roles (no duplicates)
+    const horseIds = [...new Set(roles.map(r => r.horse_id.toString()))]
+      .map(id => new ObjectId(id));
+
+    // 3. Load only those horses
+    const horses = await db.collection("horses").find({ _id: { $in: horseIds } }).toArray();
+
     res.json(horses);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -113,6 +134,21 @@ router.post("/", upload.fields([
       photo_right: photoRight,
       photo_behind: photoBehind,
       historical_files: [],  // Initialize empty array for later
+      createdAt: new Date()
+    });
+
+    // Creator becomes the horse's first owner (role)
+    const creator = await db.collection("users").findOne({ uid: user_id });
+
+    await db.collection("roles").insertOne({
+      user_id,
+      email: creator ? creator.email : "",
+      name: creator ? creator.userName : "",
+      horse_id: result.insertedId,
+      role: "Propietario",
+      start_date: new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" }),
+      end_date: null,
+      created_by: user_id,
       createdAt: new Date()
     });
 
@@ -298,6 +334,16 @@ router.get("/:id", async (req, res) => {
     as: "procedure_vets"
   }
 },
+
+{
+  $lookup: {
+    from: "roles",
+    localField: "_id",
+    foreignField: "horse_id",
+    as: "roles"
+  }
+},
+
 {
   $addFields: {
     medical_procedures: {
@@ -359,17 +405,26 @@ router.put("/:id/care", async (req, res) => {
       return res.json({ success: false, error: "Invalid horse ID" });
     }
 
-    const { location, feeding, groom, current_treatment } = req.body;
+        const { location, feeding, groom, current_treatment, updated_by } = req.body;
+    const newValues = { location, feeding, groom, current_treatment };
 
     const db = getDatabase();
-    const result = await db.collection("horses").updateOne(
-      { _id: new ObjectId(horseId) },
-      { $set: { location, feeding, groom, current_treatment } }
-    );
 
-    if (result.matchedCount === 0) {
+    // Get the horse BEFORE updating, to know the old values
+    const oldHorse = await db.collection("horses").findOne({ _id: new ObjectId(horseId) });
+
+    if (!oldHorse) {
       return res.json({ success: false, error: "Horse not found" });
     }
+
+    await db.collection("horses").updateOne(
+      { _id: new ObjectId(horseId) },
+      { $set: newValues }
+    );
+
+    // Save a log for each field that changed
+    const { logChanges } = require("../change-log.js");
+    await logChanges(db, horseId, updated_by, oldHorse, newValues);
 
     res.json({ success: true, message: "Care data saved" });
   } catch (error) {
