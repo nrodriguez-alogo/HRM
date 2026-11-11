@@ -158,29 +158,27 @@ horseForm.addEventListener("submit", async (e) => {
     if (result.success) {
       //Save horse_id or newly created horse
       const horseId = result.id;
+      const passportDate = formData.get("passport_expedition_date");
 
+      // Only create a passport if a date was entered
+      if (passportDate) {
+        const passportData = {
+          horse_id: horseId,
+          user_id: localStorage.getItem("uid"),
+          passport_expedition_date: passportDate
+        };
 
-      const passportData = {
-        horse_id: horseId,
-        user_id: localStorage.getItem("uid"),
-        passport_expedition_date: formData.get("passport_expedition_date"),  // your new field
-      };
+        const secondResponse = await fetch("/api/passport", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(passportData)
+        });
 
-      const secondResponse = await fetch("/api/passport", {  // different endpoint
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(passportData)
-      });
+        const secondResult = await secondResponse.json();
 
-      const secondResult = await secondResponse.json();
-
-      if (secondResult.success) {
-        console.log("Both saved successfully");
-        modal.classList.remove("active");
-        horseForm.reset();
-        loadHorses();
-      } else {
-        console.error("Error saving related data:", secondResult.error);
+        if (!secondResult.success) {
+          console.error("Error saving passport:", secondResult.error);
+        }
       }
 
       modal.classList.remove("active");  // close modal

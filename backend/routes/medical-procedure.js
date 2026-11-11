@@ -44,7 +44,7 @@ router.post("/", upload.array("procedure_file", 5), async (req, res) => {
       procedure_date,
       procedure_name,
       description,
-      veterinarian_id: new ObjectId(veterinarian_id),
+      veterinarian_id: veterinarian_id ? new ObjectId(veterinarian_id) : null,
       aftercare,
       recommendations: recommendations || "",
       files: files,

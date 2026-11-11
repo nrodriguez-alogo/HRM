@@ -1327,3 +1327,36 @@ header a:hover {
   color: #999;
   font-style: italic;
 }
+/* Current roles list (Configuración) */
+.current-role {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: #f9fafb;
+  border-radius: 4px;
+}
+
+.current-role small {
+  display: block;
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.end-role-btn {
+  padding: 6px 12px;
+  background: white;
+  color: #c62828;
+  border: 1px solid #c62828;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.end-role-btn:hover {
+  background: #c62828;
+  color: white;
+}

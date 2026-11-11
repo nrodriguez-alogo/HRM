@@ -27,7 +27,30 @@ router.post("/", async (req, res) => {
     if (email) {
       user = await db.collection("users").findOne({ email: email.trim().toLowerCase() });
     }
+    // Block duplicates: same person + same role + same horse, still active
+    const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" });
 
+    const sameRoleActive = await db.collection("roles").find({
+      horse_id: new ObjectId(horse_id),
+      role,
+      $or: [
+        { end_date: null },
+        { end_date: { $gt: today } }
+      ]
+    }).toArray();
+
+    const cleanEmail = email ? email.trim().toLowerCase() : "";
+    const cleanName = name.trim().toLowerCase();
+
+    const isDuplicate = sameRoleActive.some(r =>
+      (user && r.user_id === user.uid) ||
+      (cleanEmail && r.email === cleanEmail) ||
+      (!cleanEmail && (r.name || "").trim().toLowerCase() === cleanName)
+    );
+
+    if (isDuplicate) {
+      return res.json({ success: false, error: `${name.trim()} ya tiene el rol ${role} activo en este caballo` });
+    }
     const result = await db.collection("roles").insertOne({
       user_id: user ? user.uid : null,     // null = person has no account (yet)
       email: email ? email.trim().toLowerCase() : "",   // saved even without an account, to link later
@@ -41,6 +64,33 @@ router.post("/", async (req, res) => {
     });
 
     res.json({ success: true, id: result.insertedId });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+});
+
+// PUT /api/role/:id/end — end a role (end date = today)
+router.put("/:id/end", async (req, res) => {
+  try {
+    const roleId = req.params.id;
+
+    if (!ObjectId.isValid(roleId)) {
+      return res.json({ success: false, error: "Invalid role ID" });
+    }
+
+    const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" });
+
+    const db = getDatabase();
+    const result = await db.collection("roles").updateOne(
+      { _id: new ObjectId(roleId) },
+      { $set: { end_date: today } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.json({ success: false, error: "Role not found" });
+    }
+
+    res.json({ success: true });
   } catch (error) {
     res.json({ success: false, error: error.message });
   }

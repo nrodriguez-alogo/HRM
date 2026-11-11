@@ -22,7 +22,7 @@ router.post("/", async (req, res) => {
       purpose,
       destination,
       duration: parseInt(duration),
-      veterinarian_id: new ObjectId(veterinarian_id),
+      veterinarian_id: veterinarian_id ? new ObjectId(veterinarian_id) : null,
       createdAt: new Date()
     });
 

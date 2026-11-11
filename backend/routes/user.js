@@ -20,6 +20,19 @@ router.post("/", async (req, res) => {
       createdAt: new Date()
     });
 
+    // Link roles that were created for this email before the person had an account
+    const linkUpdate = { user_id: uid };
+    if (userName) {
+      linkUpdate.name = userName;   // use the name from their account
+    }
+
+    const linked = await db.collection("roles").updateMany(
+      { email: email.toLowerCase(), user_id: null },
+      { $set: linkUpdate }
+    );
+
+    console.log(`Roles linked to new user: ${linked.modifiedCount}`);
+
     res.json({ success: true, userId: result.insertedId });
   } catch (error) {
     res.json({ success: false, error: error.message });

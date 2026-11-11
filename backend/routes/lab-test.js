@@ -46,7 +46,7 @@ router.post("/", upload.array("lab_test_file", 5), async (req, res) => {
       test_type,
       test_result,
       official_laboratory,
-      veterinarian_id: new ObjectId(veterinarian_id),
+      veterinarian_id: veterinarian_id ? new ObjectId(veterinarian_id) : null,
       files: files,
       createdAt: new Date()
     });

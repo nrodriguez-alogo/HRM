@@ -392,7 +392,7 @@ function renderHorseDetail(horse) {
     const roleOrder = ["Propietario", "Entrenador", "Montador", "Veterinario", "Cuidador", "Palafrenero"];
 
     const activeRoles = (horse.roles || [])
-      .filter(r => r.start_date <= today && (!r.end_date || r.end_date >= today))
+      .filter(r => r.start_date <= today && (!r.end_date || r.end_date > today))
       .sort((a, b) => roleOrder.indexOf(a.role) - roleOrder.indexOf(b.role));
 
     // Group names by role: { Propietario: ["Natalia", "Juan"], Entrenador: ["Yade"] }
@@ -417,6 +417,25 @@ function renderHorseDetail(horse) {
     const isOwner = activeRoles.some(r => r.user_id === currentUid && r.role === "Propietario");
 
     document.getElementById("configBtn").style.display = isOwner ? "inline-block" : "none";
+
+        // FILL "ROLES ACTUALES" IN CONFIGURACIÓN
+    const currentRolesList = document.getElementById("currentRolesList");
+
+    currentRolesList.innerHTML = activeRoles.length > 0
+      ? activeRoles.map(r => `
+          <div class="current-role">
+            <div>
+              <strong>${r.role}:</strong> ${r.name}
+              <small>desde ${formatDateString(r.start_date)}${r.email ? " · " + r.email : ""}</small>
+            </div>
+            <button type="button" class="end-role-btn" data-role-id="${r._id}">Terminar</button>
+          </div>
+        `).join("")
+      : `<p class="no-roles">Sin roles activos</p>`;
+
+    currentRolesList.querySelectorAll(".end-role-btn").forEach(btn => {
+      btn.addEventListener("click", () => endRole(btn.dataset.roleId));
+    });
 
     // BUILD SIDEBAR
     const sidebarHtml = `
@@ -1524,6 +1543,7 @@ careForm.addEventListener("submit", async (e) => {
       console.log("Care data saved");
       careModal.classList.remove("active");
       careForm.reset();
+      loadHorseDetail();   // refresh sidebar and accordion with the new values
     } else {
       alert("Error: " + result.error);
     }
@@ -1616,6 +1636,24 @@ roleForm.addEventListener("submit", async (e) => {
     console.error("Fetch error:", error);
   }
 });
+
+// End a role (sets its end date to today)
+async function endRole(roleId) {
+  if (!confirm("¿Terminar este rol? Quedará en el historial con fecha de fin de hoy.")) return;
+
+  try {
+    const response = await fetch(`/api/role/${roleId}/end`, { method: "PUT" });
+    const result = await response.json();
+
+    if (result.success) {
+      loadHorseDetail();   // refresh sidebar and roles list
+    } else {
+      alert("Error: " + result.error);
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+}
 
 // Load vets on page load
 loadHaulingVeterinarians();

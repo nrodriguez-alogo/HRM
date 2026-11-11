@@ -46,7 +46,7 @@ router.post("/", upload.array("vaccine_file", 5), async (req, res) => {
       vaccine_expiration,
       batch_number,
       route,
-      veterinarian_id: new ObjectId(veterinarian_id),
+      veterinarian_id: veterinarian_id ? new ObjectId(veterinarian_id) : null,
       files: files,
       createdAt: new Date()
     });

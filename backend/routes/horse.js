@@ -44,7 +44,7 @@ router.get("/", async (req, res) => {
       start_date: { $lte: today },
       $or: [
         { end_date: null },
-        { end_date: { $gte: today } }
+        { end_date: { $gt: today } }
       ]
     }).toArray();
 

@@ -27,7 +27,7 @@ router.post("/", upload.single("passport_file"), async (req, res) => {
     const { horse_id, user_id, passport_expedition_date } = req.body;
     console.log("Request body:", { horse_id, user_id, passport_expedition_date });
 
-    if (!horse_id || !user_id) {
+    if (!horse_id || !user_id || !passport_expedition_date) {
       console.log("ERROR: Missing horse_id or user_id");
       return res.json({ success: false, error: "horse_id and user_id required" });
     }
