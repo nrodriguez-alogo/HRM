@@ -6,6 +6,7 @@ document.getElementById("backBtn").addEventListener("click", () => {
 // Logout button
 document.getElementById("logoutBtn").addEventListener("click", () => {
   auth.signOut().then(() => {
+    localStorage.removeItem("uid");
     window.location.href = "login.html";
   });
 });

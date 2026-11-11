@@ -1,16 +1,3 @@
-//Authentication check
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "your-project.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abc123def456"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-
   //Logout
 
   // Show user email
@@ -23,8 +10,9 @@
   // Logout
   document.getElementById("logoutBtn").addEventListener("click", () => {
     auth.signOut().then(() => {
-      window.location.href = "login.html";
-    });
+    localStorage.removeItem("uid");
+    window.location.href = "login.html";
+  });
   });
 
 //Load horse databse
